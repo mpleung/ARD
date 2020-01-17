@@ -1,0 +1,43 @@
+alpha <- list()
+beta  <- list()
+
+alpha[['A']] <- 10
+alpha[['B']] <- 10
+alpha[['C']] <- 10
+
+beta[['A']] <- 10
+beta[['B']] <- 10
+beta[['C']] <- 10
+
+u.func <- function(payout = 10, aversion = 0.5) {
+  u <- (payout^(1 - aversion) - 1)/(1 - aversion)
+  #u <- 1 - exp(-1 * aversion * payout)
+  return(u)
+}
+
+U.func <- function(prob=0.5, bet.size = 0.1, aversion = 0.3) {
+  #p <- alpha[[type]]/(alpha[[type]] + beta[[type]])
+  p <- prob
+  
+  base_wealth <- 10
+    
+  wealth_high <- base_wealth*(1 + bet.size) 
+  u_high <- u.func(payout = wealth_high, aversion = aversion)
+  
+  wealth_low <- base_wealth*(1 - bet.size) 
+  u_low <- u.func(payout = wealth_low, aversion = aversion)
+  
+  u_nobet <- u.func(payout = base_wealth, aversion = aversion)
+  
+  U.bet <- p*u_high + (1 - p)*u_low
+  U.nobet <- u_nobet
+  
+  return(c(U.bet, U.nobet))
+}
+
+prob <- function(a = 10, b = 10, new.a = 0, new.b = 0) {
+  alpha <- a + new.a
+  beta <- b + new.b
+  p <- alpha/(alpha + beta)
+  return(p)
+}

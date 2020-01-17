@@ -5,10 +5,8 @@
 import numpy as np, pandas as pd, nuclear_norm_module as nn, time
 from scipy.spatial.distance import pdist, squareform
 
-np.random.seed(seed=0)
-
-Ns = [50,100,150,200,250,300,350,400] # sample sizes
-B = 500                               # number of simulation draws
+Ns = [50,100,200,300,400,500] # each entry n is a sample size equaling N_1 and N_2
+B = 500                       # number of simulation draws
 
 print('B = {}\n'.format(B))
 
@@ -17,7 +15,13 @@ print('B = {}\n'.format(B))
 MSEs = np.zeros((3,len(Ns),B))  # mean-squared errors
 
 for i,n in enumerate(Ns):
+    np.random.seed(n)
+    runtime = 0
+    print('n = {}'.format(n))
+
     for b in range(B):
+        if b%50 == 0: print('  b = {}'.format(b))
+
         # latent space model
         alpha = np.random.normal(0,1,n)
         positions = np.random.exponential(size=(n,2))
@@ -46,26 +50,26 @@ for i,n in enumerate(Ns):
         A_SBM = U < P_SBM # n x n adjacency matrix
 
         # generate k ARDs
-        k = int(round(n**(0.4)))
+        k = int(round(np.sqrt(n)))
         types = np.random.binomial(1,0.5,size=(k,n))
         ARD_LSM = types.dot(A_LSM) # k x n
         ARD_RDP = types.dot(A_RDP) # k x n
         ARD_SBM = types.dot(A_SBM) # k x n
 
         # estimation
-        lmbd = 4*n*np.sqrt(k) # penalty
-
         start = time.time()
-        Phat_LSM = nn.matrix_regression(ARD_LSM, types, lmbd)
-        Phat_RDP = nn.matrix_regression(ARD_RDP, types, lmbd)
-        Phat_SBM = nn.matrix_regression(ARD_SBM, types, lmbd)
+        Phat_LSM = nn.matrix_regression(ARD_LSM, types)
+        Phat_RDP = nn.matrix_regression(ARD_RDP, types)
+        Phat_SBM = nn.matrix_regression(ARD_SBM, types)
         end = time.time()
-        if b == 0: print('n = {}: {} seconds computation time.'.format(n,end-start))
+        runtime += (end-start)/B
         
         # mean-squared errors
         MSEs[0,i,b] = ((Phat_LSM - P_LSM)**2).mean()
         MSEs[1,i,b] = ((Phat_RDP - P_RDP)**2).mean()
         MSEs[2,i,b] = ((Phat_SBM - P_SBM)**2).mean()
+
+    print('  {} seconds computation time.'.format(runtime))
         
 ##### Output results #####
 

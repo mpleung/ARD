@@ -1,0 +1,9 @@
+library(tidyverse)
+
+x <- read_csv('directory/to/filename/spreadsheet1.csv')
+y <- read_csv('directory/to/filename/spreadsheet2.csv')
+
+z <- x %>%
+  left_join(y, by= c('ASIN_var_name_x' = 'ASIN_var_name_y',
+                     'Product_group_var_name_x' = 'Product_group_var_name_y'))
+

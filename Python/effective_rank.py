@@ -5,14 +5,14 @@
 import numpy as np, pandas as pd
 from scipy.spatial.distance import pdist, squareform
 
-np.random.seed(seed=0)
-
-Ns = [50,100,150,200,250,300,350,400] # sample sizes
+Ns = [50,100,200,300,400,500] # sample sizes
 B = 500
 
 eff_ranks = np.zeros((3,len(Ns)))
 
 for i,n in enumerate(Ns):
+    np.random.seed(n)
+
     for b in range(B):
         # latent space model
         alpha = np.random.normal(0,1,n)

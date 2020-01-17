@@ -1,0 +1,48 @@
+#' Input validation for objective function 
+#' 
+#' \code{\link{obj_func}} and \code{\link{obj_func.grad}} have common inputs
+#' and therefore require the same validations. To avoid code redundancy, these
+#' common checks have been placed in this function, which is then referenced.
+#' 
+#' @param inputs A matrix object. This contains ARD census data in matrix form.
+#'  It should be of dimension N x K, where N = village size and K = number of ARD characteristics.
+#' @param outputs A matrix object. This contains the ARD survey data 
+#'  in matrix form with size M x K, where N > M = number of households receiving ARD questionairre. 
+#' @param W_k A matrix object. This is the current iteration's guess for the ideal M x N linear operator. 
+#'  Users do not need to create this themselves. It is provided via \code{\link{next_W_func}}. 
+#' @return There is no returned value. This function solely raises errors in the event of invalid inputs. 
+#' @export
+obj_func.testing <- function(inputs, outputs, W_k) {
+  # Before proceeding, must check that mat meets requirements.
+  if (!("matrix" %in% class(inputs))) {
+    error = function(e) {
+      message("Input variable 'inputs' for obj_func must be of class 'matrix'.
+        Inputted object is of class ", class(inputs))
+    }
+  } else if (!("matrix" %in% class(outputs))) {
+    error = function(e) {
+      message("Input variable 'outputs' for obj_func must be of class 'matrix'.
+        Inputted object is of class ", class(outputs))
+    }
+  } else if (!("matrix" %in% class(W_k))) {
+    error = function(e) {
+      message("Input variable 'W_k' for obj_func must be of class 'matrix'.
+        Inputted object is of class ", class(W_k))
+    }
+  } else if (ncol(inputs) != ncol(outputs)) {
+    error = function(e) {
+      message("Input variables 'inputs' and 'outputs' have different number of columns,
+        implying inconsistent number of covariates in data: ", c(ncol(inputs), ncol(outputs)))
+    }
+  } else if (nrow(inputs) != ncol(W_k)) {
+    error = function(e) {
+      message("Number of rows for input variable 'inputs' does not match number of columns in 'W_k': ", 
+        c(nrow(inputs), ncol(W_k)), ". Please check construction of 'W_k' by accel_nuclear_gradient().")
+    }
+  } else if (nrow(outputs) != nrow(W_k)) {
+    error = function(e) {
+      message("Number of rows for input variable 'outputs' does not match number of rows in 'W_k': ", 
+        c(nrow(outputs), nrow(W_k)), ". Please check construction of 'W_k' by accel_nuclear_gradient().")
+    }
+  }
+}
