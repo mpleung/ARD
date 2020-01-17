@@ -1,6 +1,6 @@
 This repository contains code for simulation experiments and walkthroughs on using the estimator in Alidaee, Auerbach, and Leung (2019), "Recovering Network Structure from Aggregated Relational Data Using Penalized Regression." We provide implementations in Python and R, found in their respective folders. Walkthroughs are given in the notebook files walkthrough.ipynb. The file in the Python folder can be viewed in two ways. 
 
-1. It can be opened in your browser using this binder link: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mpleung/ARD/Python/master?filepath=walkthrough.ipynb) Note that this might take a little bit of time to start up. 
+1. It can be opened in your browser using this binder link: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mpleung/ARD/master?filepath=Python%2Fwalkthrough.ipynb) Note that this might take a little bit of time to start up. 
 
 2. You can open the file on your desktop using the notebook viewer [nteract](https://nteract.io/desktop). This method requires an installation of Python, the Python kernel, and the required modules (see instructions below), but it also allows you to use your own datasets instead of those provided in our example. To do so, save walkthrough.ipynb, nuclear\_norm\_module.py, and your datasets in CSV format to the same working directory, open the walkthrough file in nteract, and change the name of the CSVs in the walkthrough within the nteract user interface. 
 
