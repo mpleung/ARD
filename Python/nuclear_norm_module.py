@@ -1,6 +1,6 @@
 """Penalized estimator for recovering networks from ARD
 
-This module implements the penalized regression estimator of Alidaee, Auerbach, and Leung (2019) for recovering networks from ARD. It builds on code from https://github.com/wetneb/tracenorm implementing Ji and Ye (2009).
+This module implements the penalized regression estimator of Alidaee, Auerbach, and Leung (2020) for recovering networks from ARD. It builds on code from https://github.com/wetneb/tracenorm implementing Ji and Ye (2009).
 
 Ji, S., & Ye, J. (2009, June). An accelerated gradient method for trace norm minimization. In Proceedings of the 26th annual international conference on machine learning (pp. 457-464). ACM.
 """

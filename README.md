@@ -1,4 +1,4 @@
-This repository contains code for simulation experiments and walkthroughs on using the estimator in Alidaee, Auerbach, and Leung (2019), "Recovering Network Structure from Aggregated Relational Data Using Penalized Regression." We provide implementations in Python and R, found in their respective folders. Walkthroughs are given in the notebook files walkthrough.ipynb. The file in the Python folder can be viewed in two ways. 
+This repository contains code for simulation experiments and walkthroughs on using the estimator in Alidaee, Auerbach, and Leung (2020), "Recovering Network Structure from Aggregated Relational Data Using Penalized Regression." We provide implementations in Python and R, found in their respective folders. Walkthroughs are given in the notebook files walkthrough.ipynb. The file in the Python folder can be viewed in two ways. 
 
 1. It can be opened in your browser using this binder link: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mpleung/ARD/master?filepath=Python%2Fwalkthrough.ipynb) Note that this might take a little bit of time to start up. 
 
