@@ -14,7 +14,7 @@ The file in the R folder can also be viewed in nteract after installation of R, 
 * monte\_carlo.py: code for simulation experiments summarized in Table 2 of the paper.
 * effective\_rank.py: produces Table 1 of the paper, which simulates the effective ranks of M^\* under three network formation models.
 
-To run the .py files, we require Python 3 and installation of [numpy](https://numpy.org/), [pandas](https://pandas.pydata.org/), and [scipy](https://www.scipy.org). See [this walkthrough](https://python.quantecon.org/getting_started.html) for installing Python. The packages can then be installed via command line by entering 
+To run the .py files, we require Python 3 and installation of [numpy](https://numpy.org/), [pandas](https://pandas.pydata.org/), and [scipy](https://www.scipy.org). See [this walkthrough](https://python.quantecon.org/getting_started.html) for installing Python via the Anaconda distribution, which also includes the required packages. If Python 3 is already installed on your machine, then you only need to install the packages, which can be done by entering into command line
 
     python3 -m pip install --user numpy scipy pandas
 
