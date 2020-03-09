@@ -1,0 +1,7 @@
+N <- 10000
+confidence <- 10
+
+ratio <- list()
+ratio[['A']] <- 0.3
+ratio[['B']] <- 0.5
+ratio[['C']] <- 0.7

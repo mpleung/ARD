@@ -1,0 +1,21 @@
+library(tidyverse)
+library(lubridate)
+library(writexl)
+baseline <- read_csv('/users/halidaee/Documents/surveyCTO_sync/Baseline Household UPGP_WIDE.csv')
+
+baseline_keys <- baseline %>%
+  unite(branch, spot_number, hh_id, col = 'unique_id', sep = '-') %>%
+  mutate(submission_time = mdy_hms(SubmissionDate)) %>%
+  select(unique_id, enum_id, submission_time, KEY) %>%
+  mutate(textaudit_filename = paste0(str_replace(KEY, "uuid:", "TA_"), ".csv")) %>%
+  select(-KEY)
+
+
+text_audit_filenames <- list.files('/users/halidaee/Documents/surveyCTO_sync/media', pattern = '^TA.*csv$')
+
+text_audit_keys <- baseline_keys$textaudit_filename
+
+text_audit_keys[!(text_audit_keys %in% text_audit_filenames)]
+
+
+

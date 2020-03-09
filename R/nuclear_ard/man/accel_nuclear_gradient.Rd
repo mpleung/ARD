@@ -24,7 +24,7 @@ It should be of dimension K x N, where N = village size and K = number of ARD ch
 in matrix form with size K x M, where N > M = number of households receiving ARD questionairre.}
 
 \item{lambda}{A scalar (numeric) value. This is an initial guess that will be iterated on. It can
-alternatively be defined as 'optimal', which will set \eqn{\lambda = 2(\sqrt{N} + \sqrt{M})(\sqrt{N} + \sqrt{K})}.}
+alternatively be defined as 'NW', which will set \eqn{\lambda = 2(\sqrt{N} + \sqrt{M})(\sqrt{N} + \sqrt{K})}.}
 
 \item{Lipschitz}{A string. This determines how the Lipschitz constant is computed. 'JiYe' implements
 the iterative algorithm outlined in Ji and Ye (2009). 'regression' sets it to the analytically derived

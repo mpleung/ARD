@@ -1,6 +1,6 @@
 Package: nuclearARD
 Title: nuclearARD
-Version: 0.1
+Version: 0.1.1
 Encoding: UTF-8
 Authors@R: person("Hossein", "Alidaee", email="halidaee@theoretically.us", role=c('aut', 'cre'))
 Description: Implements ARD method of Breza et al. (2019) using nuclear norm, as suggested in Alidaee, Auerbach, Leung (2020).
@@ -8,5 +8,5 @@ Depends:
 	R (>= 3.1.0),
 	Matrix (>= 1.2)
 License: GPL-2
-RoxygenNote: 7.0.1
+RoxygenNote: 7.0.2
 Roxygen: list(markdown = TRUE)

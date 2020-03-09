@@ -1,0 +1,101 @@
+Z <- ard_census*1
+N <- nrow(Z)
+K <- ncol(Z)
+
+tZ_empty <- t(Z)*0
+
+##### ATTEMPT 1
+#Z_mega <- matrix(nrow=N*K, ncol = choose(N, 2))
+
+Z_mega <- kronecker(diag(1, N), tZ_empty)
+self_columns <- N*0:(N - 1) + 1:N
+
+
+#### ATTEMPT 2
+Z_mega <- kronecker(matrix(1, nrow=N, ncol = N), t(Z))
+
+# Must put zero on columns for self. 
+# col 1 zero for rows 1 - K
+# col N + 2 zero for rows K + 1 - 2K
+# 
+# columns:
+# N*0:(N-1) + 1:N
+# 
+# need to repeat each K times, aka one for each trait row for person i:
+#   rep(N*0:(N-1) + 1:N, each = K)
+# 
+# rows:
+#   1:(N*K)
+self_columns <- rep(N*0:(N-1) + 1:N, each = K)
+self_rows <- 1:(N*K)
+self_indices <- mapply(function(x, y) c(x, y),
+                       self_rows,
+                       self_columns) %>% t()
+
+Z_mega[self_indices] <- 0
+
+
+
+greater_rows <- 1:(N*K)
+#last set of rows doesn't have greater columns since represent i=N
+greater_rows <- greater_rows[1:(length(greater_rows) - K)]
+greater_columns <- (floor((greater_rows - 1)/K) + 1)*N + 1
+
+
+get_all_greater_indices_for_row <- function(x, y) {
+  all_greater_columns <- y:choose(N, 2)
+  all_indices_for_row <- sapply(all_greater_columns, 
+                                function(z) c(x, z))
+  return(t(all_indices_for_row))
+}
+
+greater_indices <- mclapply(1:length(greater_rows), 
+                          function(x) get_all_greater_indices_for_row(greater_rows[x], greater_columns[x]),
+                          mc.cores = detectCores() - 2) %>% 
+                    do.call(rbind, .)
+
+Z_mega[greater_indices] <- 0
+
+lower_rows <- 1:(N*K)
+## Get rid of first K rows because represent person i = 1, so no lower indices.
+lower_rows <- lower_rows[(K + 1):length(lower_rows)]
+lower_columns <- (floor((lower_rows - 1)/K))*N
+
+get_all_lower_indices_for_row <- function(x, y) {
+    all_lower_columns <- 1:y
+    all_indices_for_row <- sapply(all_lower_columns, 
+                                  function(z) c(x, z))
+    return(t(all_indices_for_row))
+}
+
+lower_indices <- mclapply(1:length(lower_rows), 
+                          function(x) get_all_lower_indices_for_row(lower_rows[x], lower_columns[x]),
+                          mc.cores = detectCores() - 2) %>% 
+  do.call(rbind, .)
+
+Z_mega[lower_indices] <- 0
+  
+
+## For person j < person i, replace newly 0 column with Z_{jk} vector
+for (i in 2:N) {
+  max_j <- i - 1
+  Z_j <- t(Z[1:max_j,])
+  row_indices <- ((i - 1)*K + 1):(i*K)
+  col_indices <- N*(0:(max_j - 1)) + i
+  Z_mega[row_indices, col_indices] <- Z_j
+}
+
+
+# remove redundant columns so NK * (N choose 2) instead of NK * NN
+redundant_columns <-  unlist(sapply(1:N, function(x) N*(x - 1):(N - 1) + x))
+Z_mega <- Z_mega[,-c(redundant_columns)]
+
+##### transform Y to match Z
+Y <- as.vector(t(ard_survey))
+
+#### Do lasso
+
+lasso.model <- glmnet(Z_mega, Y, intercept = FALSE, lower.limits = 0)
+
+a <- coef(lasso.model)[,ncol(coef(lasso.model))]
+

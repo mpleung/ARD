@@ -13,7 +13,7 @@
 #' @param outputs A matrix object. This contains the ARD survey data 
 #'  in matrix form with size K x M, where N > M = number of households receiving ARD questionairre. 
 #' @param lambda A scalar (numeric) value. This is an initial guess that will be iterated on. It can 
-#'  alternatively be defined as 'optimal', which will set \eqn{\lambda = 2(\sqrt{N} + \sqrt{M})(\sqrt{N} + \sqrt{K})}.
+#'  alternatively be defined as 'NW', which will set \eqn{\lambda = 2(\sqrt{N} + \sqrt{M})(\sqrt{N} + \sqrt{K})}.
 #' @param Lipschitz A string. This determines how the Lipschitz constant is computed. 'JiYe' implements
 #'  the iterative algorithm outlined in Ji and Ye (2009). 'regression' sets it to the analytically derived
 #'  constant for the multivariate regression problem posed in Alidaee et al. (2020). Set to 'regression' by 
@@ -69,7 +69,7 @@ accel_nuclear_gradient <- function(inputs, outputs, lambda, Lipschitz = 'regress
     stop(Lipschitz, "is an invalid option for the parameter Lipschitz. Please select one of either 'regression' or 'JiYe'. See documentation for details.")
   }
 
-  if (lambda == 'optimal') {
+  if (lambda == 'NW') {
     lambda <- 2 * (sqrt(M) + sqrt(N) + 1) * (sqrt(N) + sqrt(K))
   }
   
@@ -159,7 +159,7 @@ accel_nuclear_gradient <- function(inputs, outputs, lambda, Lipschitz = 'regress
 #' @import Matrix
 matrix_regression <- function(inputs, outputs, iterations = 5000, etol = 10e-05) {
   Lipschitz  <- 'regression'
-  lambda     <- 'optimal'
+  lambda     <- 'NW'
   Z_1        <- 0
   symmetrize <- TRUE
   W <- accel_nuclear_gradient(inputs, outputs, lambda, Lipschitz, iterations, etol, Z_1, gamma, symmetrize)

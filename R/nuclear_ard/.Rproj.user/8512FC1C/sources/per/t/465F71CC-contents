@@ -1,0 +1,68 @@
+library("igraph")
+library("randnet")
+
+##this example code shows you how to draw a network histogram
+##Note to eric: should order using degree distribution
+
+#set color scheme
+palf <- colorRampPalette(c("white", "purple")) 
+
+#first note that usual network picture is not useful
+D1 = allVillageRelationships_HH_1  #this is the adjacency matrix of village one
+
+plot.igraph(graph.adjacency(D1), edge.arrow.size = 0, vertex.size = 1, 
+            vertex.label = NA, vertex.label.cex = .8)
+
+##################################################
+#Using spectral clustering
+##################################################
+
+#first cluster village one via spectral clustering
+group = kmeans((svd(D1)$v)[,1:5],5)$cluster #assign agent to one of five clusters
+D2 = D1[order(group),order(group)] #order the agents by cluster assignment
+heatmap(D2, Rowv = NA, Colv = NA, col = palf(100), 
+        scale="none", margins=c(10,10),labRow = FALSE, labCol = FALSE) #draw the raw data
+
+dummies = as.matrix(dummy_cols(group)[,2:6])  #create dummy variables for the five group memberships
+D3 = as.matrix(t(dummies)%*%D1%*%dummies)/outer(colSums(dummies),colSums(dummies)) #average links within clusters
+D4 = (dummies%*%D3%*%t(dummies))[order(group),order(group)] #expand to the original dimensions of the village
+heatmap(D4, Rowv = NA, Colv = NA, col = palf(100), 
+        scale="none", margins=c(10,10),labRow = FALSE, labCol = FALSE) #draw the binned network
+
+#now cluster village one projected on covariate matrix
+E1 = z_1%*%D1%*%t(z_1)/pmax(outer(rowSums(z_1),rowSums(z_1)),1) #project onto the covariates
+group = kmeans((svd(E1)$v)[,1:5],5)$cluster #rest is same as before
+dummies = as.matrix(dummy_cols(group)[,2:6])
+F1 = (as.matrix(t(dummies)%*%E1%*%dummies))/outer(colSums(dummies),colSums(dummies))
+
+F2 = (dummies%*%F1%*%t(dummies))[order(group),order(group)]
+heatmap(F2, Rowv = NA, Colv = NA, col = palf(100), 
+        scale="none", margins=c(10,10),labRow = FALSE, labCol = FALSE)
+
+##################################################
+#Using degree-corrected stochastic blockmodel 
+##################################################
+#spectral clustering makes too many small groups. try dcbm instead
+
+#first use raw network data 
+group = reg.SSP(D1,K=5,lap=TRUE)$cluster #assign agent to one of five clusters
+D2 = D1[order(group),order(group)] #order the agents by cluster assignment
+heatmap(D2, Rowv = NA, Colv = NA, col = palf(100), 
+        scale="none", margins=c(10,10),labRow = FALSE, labCol = FALSE) #draw the raw data
+
+dummies = as.matrix(dummy_cols(group)[,2:6])  #create dummy variables for the five group memberships
+D3 = DCSBM.estimate(D1,group)$B/outer(colSums(dummies),colSums(dummies)) #average links within clusters
+D4 = (dummies%*%D3%*%t(dummies))[order(group),order(group)] #expand to the original dimensions of the village
+heatmap(D4, Rowv = NA, Colv = NA, col = palf(100), 
+        scale="none", margins=c(10,10),labRow = FALSE, labCol = FALSE) #draw the binned network
+
+#now use projection onto covariates
+group = reg.SSP(E1,K=5,lap=TRUE)$cluster #same as before
+dummies = as.matrix(dummy_cols(group)[,2:6])
+F1 = DCSBM.estimate(E1,group)$B/outer(colSums(dummies),colSums(dummies)) #average links within clusters
+F2 = (dummies%*%F1%*%t(dummies))[order(group),order(group)]
+heatmap(F2, Rowv = NA, Colv = NA, col = palf(100), 
+        scale="none", margins=c(10,10),labRow = FALSE, labCol = FALSE)
+
+
+
