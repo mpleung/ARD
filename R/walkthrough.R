@@ -1,4 +1,4 @@
-install.packages('nuclearARD_0.1.tar.gz', repos=NULL, type='source') #Only needs to be run very first time
+install.packages('nuclearARD_0.1.1.tar.gz', repos=NULL, type='source') #Only needs to be run very first time
 library(nuclearARD)
 set.seed(0) # set seed
 
