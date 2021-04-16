@@ -33,6 +33,6 @@ To execute monte\_carlo.py, download our Python folder and its contents, change 
 
 You can install R [here](https://www.r-project.org/). To install our R package, download our R folder, open the R console, change the working directory to the location of our R folder, and input the following command:
 
-    install.packages('nuclearARD_0.1.tar.gz', repos=NULL, type='source')
+    install.packages('nuclearARD_0.1.1.tar.gz', repos=NULL, type='source')
 
 To view the walkthrough file in nteract, you also need to install the IRkernel. Follow the installation instructions [here](https://irkernel.github.io/installation/).
