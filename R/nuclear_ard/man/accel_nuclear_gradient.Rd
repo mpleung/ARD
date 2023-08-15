@@ -11,7 +11,6 @@ accel_nuclear_gradient(
   Lipschitz = "regression",
   iterations = 5000,
   etol = 1e-04,
-  Z_1 = 0,
   gamma = 2,
   symmetrize = TRUE
 )

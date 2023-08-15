@@ -2,12 +2,4 @@
 
 export(accel_nuclear_gradient)
 export(matrix_regression)
-export(matrix_trace)
-export(next_W_func)
-export(nuclear_norm)
-export(obj_func)
-export(obj_func.approx)
-export(obj_func.grad)
-export(obj_func.testing)
-export(symmetrize)
 import(Matrix)
