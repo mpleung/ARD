@@ -1,8 +1,8 @@
-Package: nuclearARDF
-Title: nuclearARDF
+Package: nuclearARD
+Title: nuclearARD
 Version: 0.1.2
 Encoding: UTF-8
-Authors@R: person("Hossein", "Alidaee", email="halidaee@theoretically.us", role=c('aut', 'cre'))
+Authors@R: person("Hossein", "Alidaee", email="halidaee@halidaee.com", role=c('aut', 'cre'))
 Description: Implements ARD method of Breza et al. (2019) using nuclear norm, as suggested in Alidaee, Auerbach, Leung (2020).
 Imports: Rcpp (>= 1.0.0)
 LinkingTo: Rcpp, RcppArmadillo
