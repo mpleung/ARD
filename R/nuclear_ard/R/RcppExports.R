@@ -2,18 +2,18 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 compute_lipschitz <- function(inputs, outputs, lambda, L_bar, Z, gamma) {
-    .Call('_nuclearARDF_compute_lipschitz', PACKAGE = 'nuclearARDF', inputs, outputs, lambda, L_bar, Z, gamma)
+    .Call('_nuclearARD_compute_lipschitz', PACKAGE = 'nuclearARD', inputs, outputs, lambda, L_bar, Z, gamma)
 }
 
 compute_iteration <- function(inputs, outputs, lambda, L_bar, Z, alpha, W, etol) {
-    .Call('_nuclearARDF_compute_iteration', PACKAGE = 'nuclearARDF', inputs, outputs, lambda, L_bar, Z, alpha, W, etol)
+    .Call('_nuclearARD_compute_iteration', PACKAGE = 'nuclearARD', inputs, outputs, lambda, L_bar, Z, alpha, W, etol)
 }
 
 nuclear_norm <- function(matrix) {
-    .Call('_nuclearARDF_nuclear_norm', PACKAGE = 'nuclearARDF', matrix)
+    .Call('_nuclearARD_nuclear_norm', PACKAGE = 'nuclearARD', matrix)
 }
 
 symmetrize <- function(matrix) {
-    .Call('_nuclearARDF_symmetrize', PACKAGE = 'nuclearARDF', matrix)
+    .Call('_nuclearARD_symmetrize', PACKAGE = 'nuclearARD', matrix)
 }
 

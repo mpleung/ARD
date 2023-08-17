@@ -13,7 +13,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // compute_lipschitz
 List compute_lipschitz(const arma::mat& inputs, const arma::mat& outputs, double lambda, double L_bar, const arma::mat& Z, const double gamma);
-RcppExport SEXP _nuclearARDF_compute_lipschitz(SEXP inputsSEXP, SEXP outputsSEXP, SEXP lambdaSEXP, SEXP L_barSEXP, SEXP ZSEXP, SEXP gammaSEXP) {
+RcppExport SEXP _nuclearARD_compute_lipschitz(SEXP inputsSEXP, SEXP outputsSEXP, SEXP lambdaSEXP, SEXP L_barSEXP, SEXP ZSEXP, SEXP gammaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -29,7 +29,7 @@ END_RCPP
 }
 // compute_iteration
 List compute_iteration(const arma::mat& inputs, const arma::mat& outputs, const double& lambda, const double& L_bar, arma::mat Z, double alpha, arma::mat W, double etol);
-RcppExport SEXP _nuclearARDF_compute_iteration(SEXP inputsSEXP, SEXP outputsSEXP, SEXP lambdaSEXP, SEXP L_barSEXP, SEXP ZSEXP, SEXP alphaSEXP, SEXP WSEXP, SEXP etolSEXP) {
+RcppExport SEXP _nuclearARD_compute_iteration(SEXP inputsSEXP, SEXP outputsSEXP, SEXP lambdaSEXP, SEXP L_barSEXP, SEXP ZSEXP, SEXP alphaSEXP, SEXP WSEXP, SEXP etolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -47,7 +47,7 @@ END_RCPP
 }
 // nuclear_norm
 double nuclear_norm(const arma::mat& matrix);
-RcppExport SEXP _nuclearARDF_nuclear_norm(SEXP matrixSEXP) {
+RcppExport SEXP _nuclearARD_nuclear_norm(SEXP matrixSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -58,7 +58,7 @@ END_RCPP
 }
 // symmetrize
 arma::mat symmetrize(const arma::mat& matrix);
-RcppExport SEXP _nuclearARDF_symmetrize(SEXP matrixSEXP) {
+RcppExport SEXP _nuclearARD_symmetrize(SEXP matrixSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -69,14 +69,14 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_nuclearARDF_compute_lipschitz", (DL_FUNC) &_nuclearARDF_compute_lipschitz, 6},
-    {"_nuclearARDF_compute_iteration", (DL_FUNC) &_nuclearARDF_compute_iteration, 8},
-    {"_nuclearARDF_nuclear_norm", (DL_FUNC) &_nuclearARDF_nuclear_norm, 1},
-    {"_nuclearARDF_symmetrize", (DL_FUNC) &_nuclearARDF_symmetrize, 1},
+    {"_nuclearARD_compute_lipschitz", (DL_FUNC) &_nuclearARD_compute_lipschitz, 6},
+    {"_nuclearARD_compute_iteration", (DL_FUNC) &_nuclearARD_compute_iteration, 8},
+    {"_nuclearARD_nuclear_norm", (DL_FUNC) &_nuclearARD_nuclear_norm, 1},
+    {"_nuclearARD_symmetrize", (DL_FUNC) &_nuclearARD_symmetrize, 1},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_nuclearARDF(DllInfo *dll) {
+RcppExport void R_init_nuclearARD(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }
