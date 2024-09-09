@@ -177,7 +177,7 @@ arma::mat next_W_func(const arma::mat& inputs, const arma::mat& outputs, const d
     arma::mat C_u;
     arma::mat C_v;
     arma::vec C_singvalues;
-    arma::svd(C_u, C_singvalues, C_v, C);
+    arma::svd(C_u, C_singvalues, C_v, C, "dc");
     int C_singvalues_size = C_singvalues.n_elem;
 
 // Do soft thresholding

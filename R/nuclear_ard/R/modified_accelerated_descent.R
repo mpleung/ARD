@@ -76,7 +76,7 @@ accel_nuclear_gradient <- function(inputs, outputs, lambda, Lipschitz = "regress
     # It is computed analytically for the regression problem in Alidaee, Auerbach, and Leung (2019). This
     # functionality is only built in for the purpose of potential future generalization.
     if (Lipschitz == "JiYe") {
-      JiYe_values <- compute_lipschitz(inputs, outputs, lambda, L.bar, Z, gamma)
+      JiYe_values <- compute_lipschitz(inputs, outputs, lambda, L, Z, gamma)
       L <- JiYe_values$L_bar
       lambda <- JiYe_values$lambda
     }
