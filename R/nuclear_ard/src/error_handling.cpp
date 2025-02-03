@@ -26,16 +26,26 @@ bool obj_func_testing(arma::mat inputs, arma::mat outputs, arma::mat W_k) {
     // 2. inputs and outputs must have same number of rows as W_k
     // 3. outputs must have fewer columns than inputs
 
-    if(inputs.n_cols != outputs.n_cols) {
-      Rcpp::stop("Input variables 'inputs' and 'outputs' have different number of columns, implying inconsistent number of covariates in data: ", inputs.n_cols, " (inputs) vs ",  outputs.n_cols, " (outputs).");
+    // if(inputs.n_cols != outputs.n_cols) {
+    //   Rcpp::stop("Input variables 'inputs' and 'outputs' have different number of columns, implying inconsistent number of covariates in data: %d (inputs) vs %d (outputs).", inputs.n_cols, outputs.n_cols);
+    // } else if (inputs.n_cols != W_k.n_rows) {
+    //   Rcpp::stop("Number of columns for input variable 'inputs' does not match number of rows in 'W_k': %d vs %d. Please check construction of 'W_k' by accel_nuclear_gradient().", inputs.n_cols, W_k.n_rows);
+    // } else if (outputs.n_cols != W_k.n_cols) {
+    //   Rcpp::stop("Number of columns for input variable 'outputs' does not match number of columns in 'W_k': %d vs %d. Please check construction of 'W_k' by accel_nuclear_gradient().", outputs.n_cols, W_k.n_cols);
+    // } else if (outputs.n_cols > inputs.n_cols) {
+    //     Rcpp::stop("Input variable 'inputs' must have at least as many columns as input variable 'outputs'.");
+    // } else {
+    //   return true;
+    // }
+
+    if(inputs.n_rows != outputs.n_rows) {
+      Rcpp::stop("Input variables 'inputs' and 'outputs' have different number of rows, implying inconsistent number of covariates in data: %d (inputs) vs %d (outputs).", inputs.n_rows, outputs.n_rows);
     } else if (inputs.n_cols != W_k.n_rows) {
-      Rcpp::stop("Number of columns for input variable 'inputs' does not match number of rows in 'W_k': ", 
-        inputs.n_cols, " vs ", W_k.n_rows, ". Please check construction of 'W_k' by accel_nuclear_gradient().");
+      Rcpp::stop("Number of columns for input variable 'inputs' does not match number of rows in 'W_k': %d vs %d. Please check construction of 'W_k' by accel_nuclear_gradient().", inputs.n_cols, W_k.n_rows);
     } else if (outputs.n_cols != W_k.n_cols) {
-      Rcpp::stop("Number of columns for input variable 'outputs' does not match number of columns in 'W_k': ", 
-        outputs.n_cols, " vs ", W_k.n_cols, ". Please check construction of 'W_k' by accel_nuclear_gradient().");
+      Rcpp::stop("Number of columns for input variable 'outputs' does not match number of columns in 'W_k': %d vs %d. Please check construction of 'W_k' by accel_nuclear_gradient().", outputs.n_cols, W_k.n_cols);
     } else if (outputs.n_cols > inputs.n_cols) {
-      Rcpp::stop("Input variable 'inputs' must have at least as many columns as input variable 'outputs'.");
+        Rcpp::stop("Input variable 'inputs' must have at least as many columns as input variable 'outputs'.");
     } else {
       return true;
     }
