@@ -25,12 +25,46 @@
 #'  is below etol.
 #' @param symmetrize A boolean value. This captures whether to implement the aforementioned modified
 #'  gradient descent algorithm..
+#' @param fixed_effects A boolean value. This captures whether to implement node-level fixed effects.
 #' @return An N x M matrix estimate of network connections.
 #' @export
 #' @import Matrix
 accel_nuclear_gradient <- function(inputs, outputs, lambda, Lipschitz = "regression", iterations = 5000, etol = 10e-05, gamma = 2.0, symmetrize = TRUE, fixed_effects = FALSE) {
   # This function implements Algorithm 2 from "An Accelerated Gradient
   # Method for Trace Norm Minimization" by Ji & Ye (2009)
+
+  # Make sure inputs are valid.
+  if (is.logical(fixed_effects) == FALSE) {
+    stop("fixed_effects must be a boolean value. See documentation for details.")
+  }
+  if (is.logical(symmetrize) == FALSE) {
+    stop("symmetrize must be a boolean value. See documentation for details.")
+  }
+  if (is.integer(iterations) == FALSE) {
+    stop("iterations must be an integer value. See documentation for details.")
+  }
+  if (is.numeric(lambda) == FALSE) {
+    stop("lambda must be either 'NW' or a numeric value. See documentation for details.")
+  }
+  if (is.numeric(etol) == FALSE) {
+    stop("etol must be a numeric value. See documentation for details.")
+  }
+  if (is.numeric(gamma) == FALSE) {
+    stop("gamma must be a numeric value. See documentation for details.")
+  }
+  if (Lipschitz == "regression") {
+    # For the multivariate regression case, the Lipschitz constant can analytically be derived.
+    # It is the square of the largest (first) singular value.
+    L <- eigen(inputs %*% t(inputs))$values[1]
+  } else if (Lipschitz == "JiYe") {
+    # For objective functions where the Lipschitz constant cannot be derived analytically, we
+    # implement the algorithm introduced by Ji and Ye (2009). Here, we initiate L to 1. Later,
+    # within the for loop, each iteration will converge to the optimal L using Steps 1 and 2
+    #  of their Algorithm 2.
+    L <- 1
+  } else {
+    stop(Lipschitz, "is an invalid option for the parameter Lipschitz. Please select one of either 'regression' or 'JiYe'. See documentation for details.")
+  }
 
   # Initialize scalar values
   alpha <- 1.0
@@ -51,19 +85,7 @@ accel_nuclear_gradient <- function(inputs, outputs, lambda, Lipschitz = "regress
   W <- Z
   fixed_effects_vector <- rep(0, N)
 
-  if (Lipschitz == "regression") {
-    # For the multivariate regression case, the Lipschitz constant can analytically be derived.
-    # It is the square of the largest (first) singular value.
-    L <- eigen(inputs %*% t(inputs))$values[1]
-  } else if (Lipschitz == "JiYe") {
-    # For objective functions where the Lipschitz constant cannot be derived analytically, we
-    # implement the algorithm introduced by Ji and Ye (2009). Here, we initiate L to 1. Later,
-    # within the for loop, each iteration will converge to the optimal L using Steps 1 and 2
-    #  of their Algorithm 2.
-    L <- 1
-  } else {
-    stop(Lipschitz, "is an invalid option for the parameter Lipschitz. Please select one of either 'regression' or 'JiYe'. See documentation for details.")
-  }
+
 
   if (lambda == "NW") {
     lambda <- 2 * (sqrt(M) + sqrt(N) + 1) * (sqrt(N) + sqrt(K))
@@ -126,13 +148,14 @@ accel_nuclear_gradient <- function(inputs, outputs, lambda, Lipschitz = "regress
 #' @param etol A scaler. It is the error tolerance for the algorithm. The algorithm will terminate
 #'  when either the maximum number of iterations has been met or the mean absolute error between iterations
 #'  is below etol.
+#' @param fixed_effects A boolean value. This captures whether to implement node-level fixed effects.
 #' @return An N x M matrix estimate of network connections.
 #' @export
 #' @import Matrix
-matrix_regression <- function(inputs, outputs, iterations = 5000, etol = 10e-05) {
+matrix_regression <- function(inputs, outputs, iterations = 5000, etol = 10e-05, fixed_effects = FALSE) {
   Lipschitz <- "regression"
   lambda <- "NW"
   symmetrize <- TRUE
-  W <- accel_nuclear_gradient(inputs, outputs, lambda, Lipschitz, iterations, etol, gamma, symmetrize)
+  W <- accel_nuclear_gradient(inputs, outputs, lambda, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects)
   return(W)
 }
