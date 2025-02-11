@@ -5,8 +5,8 @@ compute_lipschitz <- function(inputs, outputs, lambda, L_bar, Z, gamma) {
     .Call('_nuclearARD_compute_lipschitz', PACKAGE = 'nuclearARD', inputs, outputs, lambda, L_bar, Z, gamma)
 }
 
-compute_iteration <- function(inputs, outputs, lambda, L_bar, Z, alpha, W, etol) {
-    .Call('_nuclearARD_compute_iteration', PACKAGE = 'nuclearARD', inputs, outputs, lambda, L_bar, Z, alpha, W, etol)
+compute_iteration <- function(inputs, outputs, lambda, L_bar, Z, alpha, W, etol, fixed_effects_bool, fixed_effects_vector_min1) {
+    .Call('_nuclearARD_compute_iteration', PACKAGE = 'nuclearARD', inputs, outputs, lambda, L_bar, Z, alpha, W, etol, fixed_effects_bool, fixed_effects_vector_min1)
 }
 
 nuclear_norm <- function(matrix) {
@@ -15,5 +15,9 @@ nuclear_norm <- function(matrix) {
 
 symmetrize <- function(matrix) {
     .Call('_nuclearARD_symmetrize', PACKAGE = 'nuclearARD', matrix)
+}
+
+matrix_OLS <- function(X, Y) {
+    .Call('_nuclearARD_matrix_OLS', PACKAGE = 'nuclearARD', X, Y)
 }
 

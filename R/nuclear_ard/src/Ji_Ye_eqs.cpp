@@ -160,6 +160,9 @@ arma::mat next_W_func(const arma::mat& inputs, const arma::mat& outputs, const d
 //  so we can re-use obj_func.testing.
     bool validation = obj_func_testing(inputs, outputs, W_k);
 
+// Preliminary: Get network size N
+    int N = W_k.n_rows;
+
 // First, introduce primitive variables for the function
     arma::mat W = W_k;
     double L = mu; // practically, our mu = L for this algorithm
@@ -192,13 +195,19 @@ arma::mat next_W_func(const arma::mat& inputs, const arma::mat& outputs, const d
     int n = C_v.n_rows;
     int rank = std::min(r, n);
 
-    arma::mat sigma_lambda = arma::zeros(r, n);
-    sigma_lambda.submat(0, 0, rank - 1, rank - 1) = arma::diagmat(C_singvalues_thresholded);
+    // If rank > 1, follow Ji and Ye. Otherwise, submatrix indexing will fail. Produce a 0 matrix instead. 
+    arma::mat argmin;
+    if (rank > 1) {
+      arma::mat sigma_lambda = arma::zeros(r, n);
+      sigma_lambda.submat(0, 0, rank - 1, rank - 1) = arma::diagmat(C_singvalues_thresholded);
+      argmin = C_u * sigma_lambda * C_v.t();
+    } else {
+    // let user know model will be entirely fixed effects
+      Rcpp::Rcout << "Model will be entirely fixed effects" << std::endl;
+      argmin = arma::zeros(N, N);
+    }
 
 //   Return arg min value, based on Thm 3.1
-
-    arma::mat argmin = C_u * sigma_lambda * C_v.t();
-
     return argmin;
 
 }

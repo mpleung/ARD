@@ -28,7 +28,7 @@
 #' @return An N x M matrix estimate of network connections.
 #' @export
 #' @import Matrix
-accel_nuclear_gradient <- function(inputs, outputs, lambda, Lipschitz = "regression", iterations = 5000, etol = 10e-05, gamma = 2.0, symmetrize = TRUE) {
+accel_nuclear_gradient <- function(inputs, outputs, lambda, Lipschitz = "regression", iterations = 5000, etol = 10e-05, gamma = 2.0, symmetrize = TRUE, fixed_effects = FALSE) {
   # This function implements Algorithm 2 from "An Accelerated Gradient
   # Method for Trace Norm Minimization" by Ji & Ye (2009)
 
@@ -49,6 +49,7 @@ accel_nuclear_gradient <- function(inputs, outputs, lambda, Lipschitz = "regress
   }
 
   W <- Z
+  fixed_effects_vector <- rep(0, N)
 
   if (Lipschitz == "regression") {
     # For the multivariate regression case, the Lipschitz constant can analytically be derived.
@@ -82,18 +83,26 @@ accel_nuclear_gradient <- function(inputs, outputs, lambda, Lipschitz = "regress
     }
 
     # Step 3: Update values before next iteration.
-    value_iterator <- compute_iteration(inputs, outputs, lambda, L, Z, alpha, W, etol)
+    value_iterator <- compute_iteration(inputs, outputs, lambda, L, Z, alpha, W, etol, fixed_effects, fixed_effects_vector)
     W <- value_iterator$W
     alpha <- value_iterator$alpha
     Z <- value_iterator$Z
     flag <- value_iterator$flag
-
+    fixed_effects_vector <- value_iterator$fixed_effects_vector
     if (flag) {
+      print(paste0("Number of iterations: ", i))
       break
     }
   }
 
+  fixed_effects_rows_mat <- matrix(fixed_effects_vector, nrow = N, ncol = N, byrow = TRUE)
+  fixed_effects_cols_mat <- t(fixed_effects_rows_mat)
+  fixed_effects_matrix <- fixed_effects_rows_mat + fixed_effects_cols_mat
+  diag(fixed_effects_matrix) <- 0
+
   if (symmetrize == TRUE) W <- symmetrize(W)
+
+  W <- W + fixed_effects_matrix
 
   W <- pmax(W, matrix(0, nrow = N, ncol = M))
 

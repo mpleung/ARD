@@ -1,7 +1,7 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
 #include "Ji_Ye_eqs.h"
-
+#include "matrix_regression.h"
 using namespace Rcpp;
 using namespace arma;
 using namespace std;
@@ -89,26 +89,65 @@ List compute_lipschitz(const arma::mat& inputs, const arma::mat& outputs, double
 // [[Rcpp::export]]
 
 List compute_iteration(const arma::mat& inputs, const arma::mat& outputs,
- const double& lambda, const double& L_bar, arma::mat Z, double alpha, arma::mat W, double etol) {
+ const double& lambda, const double& L_bar, arma::mat Z, double alpha, arma::mat W, double etol, bool fixed_effects_bool, arma::rowvec fixed_effects_vector_min1) {
 
     // Update values before next iteration.
     arma::mat W_kmin1 = W;
-    W = next_W_func(inputs, outputs, lambda, L_bar, Z);
-    // if (symmetrize == TRUE) { # commenting this out for acceleration. Only symmetrizing at end of algorithm.
-    //  W <- symmetrize(W)
+
+    // Get network size
+    int N = W.n_rows;
+    
+    arma::rowvec fixed_effects_vector = arma::zeros<arma::rowvec>(N);
+
+    // If fixed effects are wanted, we need to create updated output matrix for next_W_func
+    
+    if (fixed_effects_bool == TRUE) {
+        arma::mat outputs_fixed_effects = outputs;
+        // create matrix of fixed effects. 
+        arma::mat fixed_effects_matrix = arma::repmat(fixed_effects_vector_min1, N, 1);
+
+        fixed_effects_matrix = fixed_effects_matrix + fixed_effects_matrix.t();
+
+        // make diagonal 0
+        fixed_effects_matrix.diag().fill(0);
+        // subtract fixed effects matrix from outputs
+        arma::mat outputs_adjusted_by_fixed_effects = outputs - inputs * fixed_effects_matrix;
+
+
+
+        // Get next W
+        W = next_W_func(inputs, outputs_adjusted_by_fixed_effects, lambda, L_bar, Z);
+
+        // Get new fixed effects vector
+        arma::mat outputs_adjusted_by_W = outputs - inputs * W;
+        fixed_effects_vector = matrix_OLS(inputs, outputs_adjusted_by_W).t();
+
+    } else {
+      W = next_W_func(inputs, outputs, lambda, L_bar, Z);
+    }
+
+    // if (symmetrize == TRUE) { // commenting this out for acceleration. Only symmetrizing at end of algorithm.
+
     // }
+
+
+
+
     double alpha_kmin1 = alpha;
     alpha = (1.0 + sqrt(1.0 + 4.0 * alpha * alpha)) / 2.0;
     Z = W + ((alpha_kmin1 - 1.0) / alpha) * (W - W_kmin1);
 
-    double error = arma::mean(arma::mean(arma::abs(W_kmin1 - W)));
+
+    double errorW = arma::mean(arma::mean(arma::abs(W_kmin1 - W)));
+    double errorFE = arma::mean(arma::mean(arma::abs(fixed_effects_vector_min1 - fixed_effects_vector)));
     bool flag = FALSE;
-    if (error < etol) {
+    if (errorW < etol && errorFE < etol) {
       flag = TRUE;
     }
 
     return Rcpp::List::create(Rcpp::Named("W") = W,
                             Rcpp::Named("alpha") = alpha,
                             Rcpp::Named("Z") = Z,
-                            Rcpp::Named("flag") = flag);
+                            Rcpp::Named("flag") = flag,
+                            Rcpp::Named("fixed_effects_vector") = fixed_effects_vector);
  }
