@@ -40,8 +40,8 @@ accel_nuclear_gradient <- function(inputs, outputs, lambda, Lipschitz = "regress
   if (is.logical(symmetrize) == FALSE) {
     stop("symmetrize must be a boolean value. See documentation for details.")
   }
-  if (is.integer(iterations) == FALSE) {
-    stop("iterations must be an integer value. See documentation for details.")
+  if (is.numeric(iterations) == FALSE) {
+    stop("iterations must be a numeric value. See documentation for details.")
   }
   if (is.numeric(lambda) == FALSE) {
     stop("lambda must be either 'NW' or a numeric value. See documentation for details.")
