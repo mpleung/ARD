@@ -112,7 +112,6 @@ accel_nuclear_gradient <- function(inputs, outputs, lambda, Lipschitz = "regress
     flag <- value_iterator$flag
     fixed_effects_vector <- value_iterator$fixed_effects_vector
     if (flag) {
-      print(paste0("Number of iterations: ", i))
       break
     }
   }
