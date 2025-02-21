@@ -148,13 +148,47 @@ accel_nuclear_gradient <- function(inputs, outputs, lambda, Lipschitz = "regress
 #'  when either the maximum number of iterations has been met or the mean absolute error between iterations
 #'  is below etol.
 #' @param fixed_effects A boolean value. This captures whether to implement node-level fixed effects.
+#' @param CV A boolean value. This captures whether to implement cross-validation.
+#' @param CV_grid A vector. This is the grid of lambda values to use for cross-validation. Set by default to seq(0.01, 10, by=0.01).
+#' @param CV_folds A scalar (integer) value. This is the number of folds to use for cross-validation. Set by default to 5.
 #' @return An N x M matrix estimate of network connections.
 #' @export
 #' @import Matrix
-matrix_regression <- function(inputs, outputs, iterations = 5000, etol = 10e-05, fixed_effects = FALSE) {
+matrix_regression <- function(inputs, outputs, iterations = 5000, etol = 10e-05, fixed_effects = FALSE, CV = FALSE, CV_grid = seq(0.01, 10, by = 0.01), CV_folds = 5) {
   Lipschitz <- "regression"
   lambda <- "NW"
   symmetrize <- TRUE
-  W <- accel_nuclear_gradient(inputs, outputs, lambda, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects)
+  if (CV == FALSE) {
+    W <- accel_nuclear_gradient(inputs, outputs, lambda, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects)
+  } else {
+    K <- dim(inputs)[1]
+    if (CV_folds > K) {
+      stop("CV_folds must be less than the number of ARD traits.")
+    }
+    sample_indices <- sample(rep(1:CV_folds, length.out = K))
+    CV_errors <- matrix(NA, nrow = length(CV_grid), ncol = CV_folds)
+    for (fold in 1:CV_folds) {
+      train_indices <- which(sample_indices != fold)
+      test_indices <- which(sample_indices == fold)
+      train_inputs <- inputs[train_indices, , drop = FALSE]
+      train_outputs <- outputs[train_indices, , drop = FALSE]
+      test_inputs <- inputs[test_indices, , drop = FALSE]
+      test_outputs <- outputs[test_indices, , drop = FALSE]
+      for (lambda_index in 1:length(CV_grid)) {
+        lambda <- CV_grid[lambda_index]
+        fit <- accel_nuclear_gradient(train_inputs, train_outputs, lambda, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects)
+        if (is.null(fit)) {
+          CV_errors[i, fold] <- Inf
+          next
+        }
+        predicted_valid <- fit %*% t(test_inputs)
+        error_valid <- mean((predicted_valid - test_outputs)^2, na.rm = TRUE)
+        CV_errors[lambda_index, fold] <- error_valid
+      }
+    }
+    best_lambda <- CV_grid[which.min(rowMeans(CV_errors))]
+    W <- accel_nuclear_gradient(inputs, outputs, best_lambda, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects)
+  }
+
   return(W)
 }
