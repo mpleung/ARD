@@ -116,6 +116,7 @@ accel_nuclear_gradient <- function(inputs, outputs, lambda, Lipschitz = "regress
     }
   }
 
+
   fixed_effects_rows_mat <- matrix(fixed_effects_vector, nrow = N, ncol = N, byrow = TRUE)
   fixed_effects_cols_mat <- t(fixed_effects_rows_mat)
   fixed_effects_matrix <- fixed_effects_rows_mat + fixed_effects_cols_mat
