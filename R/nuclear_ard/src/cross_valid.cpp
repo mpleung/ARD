@@ -66,6 +66,12 @@ double cross_validation_cpp(const arma::mat& inputs,
     std::shuffle(fold_indices.begin(), fold_indices.end(), g);
 
     arma::mat CV_errors(lambda_grid.size(), CV_folds);
+
+    // Implement a progress bar by having a printed counter.
+    // To do so, print the index currently being computed.
+    // Delete the previous line of output before printing the new one.
+    Rcout << "Computing fold: \n " << std::endl;
+    Rcout << "0%" << std::endl;
     for (int fold = 0; fold < CV_folds; fold++) {
         // Create train/test indices
         std::vector<int> train_idx, test_idx;
@@ -88,7 +94,6 @@ double cross_validation_cpp(const arma::mat& inputs,
         arma::mat test_inputs = inputs.rows(testInd);
         arma::mat test_outputs = outputs.rows(testInd);
 
-
         for (size_t lambda_index = 0; lambda_index < lambda_grid.size(); lambda_index++) {
             // Create a new SEXP for the current lambda value
             double lambda_val = lambda_grid[lambda_index];
@@ -102,6 +107,8 @@ double cross_validation_cpp(const arma::mat& inputs,
             double mse = arma::mean(arma::square(errors));
             CV_errors(lambda_index, fold) = mse;
         }
+        double progress = (fold + 1) / CV_folds * 100;
+        Rcout << progress << "%" << std::endl;
     }
     
     arma::vec mean_errors = arma::mean(CV_errors, 1);
