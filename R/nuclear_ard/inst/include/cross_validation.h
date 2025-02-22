@@ -2,6 +2,11 @@
 #define NUCLEARARD_CROSS_VALIDATION_H
 
 #include <RcppArmadillo.h>
+#include "Ji_Ye_eqs.h"
+#include "matrix_regression.h"
+#include "matrix_functions.h"
+#include <algorithm>    // for std::shuffle and std::fill
+#include <random>  
 
 double cross_validation(const arma::mat& inputs,
                                    const arma::mat& outputs,

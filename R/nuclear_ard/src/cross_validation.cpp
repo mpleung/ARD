@@ -1,8 +1,8 @@
 // [[Rcpp::depends(RcppArmadillo)]]
-#include <Rcpp.h>
 #include <RcppArmadillo.h>
 #include "Ji_Ye_eqs.h"
 #include "matrix_regression.h"
+#include "accelerated_descent.h"
 #include "matrix_functions.h"
 #include <algorithm>    // for std::shuffle and std::fill
 #include <random>       // for std::random_device and std::mt19937
@@ -29,50 +29,78 @@ using namespace std;
 //' @return A double. The optimal lambda value to use for network estimation. 
 //' @export
 // [[Rcpp::export]]
-arma::mat cross_validation(const arma::mat& inputs, 
-const arma::mat& outputs, 
-const SEXP& lambda_sexp, 
-const std::string& Lipschitz = "regression", 
-const int iterations = 5000, 
-const double etol = 1e-5, 
-const double gamma = 2.0, 
-const bool symmetrize = true, 
-const bool fixed_effects = false, 
-const std::vector<double>& CV_grid = std::vector<double>(seq(0.01, 10, by=0.01)), 
-const int CV_folds = 5) {
+double cross_validation(const arma::mat& inputs, 
+    const arma::mat& outputs, 
+    const SEXP& lambda_sexp, 
+    const std::string& Lipschitz = "regression", 
+    const int iterations = 5000, 
+    const double etol = 1e-5, 
+    const double gamma = 2.0, 
+    const bool symmetrize = true, 
+    const bool fixed_effects = false, 
+    const std::vector<double>& CV_grid = std::vector<double>(), 
+    const int CV_folds = 5) {
+
+    std::vector<double> lambda_grid = CV_grid;
+    // If CV_grid was not provided, create default sequence
+    if (lambda_grid.empty()) {
+        lambda_grid.reserve(1000);
+        for(int i = 1; i <= 1000; ++i) {
+            lambda_grid.push_back(i * 0.01);  // Creates sequence from 0.01 to 10
+        }
+    }
+
     int K = inputs.n_rows;
     if (CV_folds > K) {
         stop("CV_folds must be less than the number of ARD traits.");
     }
     
-    // Create fold assignments (equivalent to sample(rep(1:CV_folds, length.out = K)))
-    IntegerVector sample_indices(K);
+    // Create fold assignments
+    IntegerVector fold_indices(K);
     for (int i = 0; i < K; i++) {
-        sample_indices[i] = (i % CV_folds) + 1;
+        fold_indices[i] = (i % CV_folds) + 1;
     }
     // Shuffle the indices
     std::random_device rd;
     std::mt19937 g(rd());
-    std::shuffle(sample_indices.begin(), sample_indices.end(), g);
+    std::shuffle(fold_indices.begin(), fold_indices.end(), g);
 
-    arma::mat CV_errors(CV_grid.size(), CV_folds);
+    arma::mat CV_errors(lambda_grid.size(), CV_folds);
     for (int fold = 0; fold < CV_folds; fold++) {
-        IntegerVector train_indices = sample_indices[sample_indices != fold];
-        IntegerVector test_indices = sample_indices[sample_indices == fold];
+        // Create train/test indices
+        std::vector<int> train_idx, test_idx;
+        for(int i = 0; i < K; i++) {
+            if(fold_indices[i] == fold + 1) {
+                test_idx.push_back(i);
+            } else {
+                train_idx.push_back(i);
+            }
+        }
+        
+        arma::uvec trainInd = arma::conv_to<arma::uvec>::from(arma::vec(train_idx));
+        arma::uvec testInd = arma::conv_to<arma::uvec>::from(arma::vec(test_idx));
 
-        arma::mat train_inputs = inputs.rows(train_indices);
-        arma::mat train_outputs = outputs.rows(train_indices);
-        arma::mat test_inputs = inputs.rows(test_indices);
-        arma::mat test_outputs = outputs.rows(test_indices);
+        arma::mat train_inputs = inputs.rows(trainInd);
+        arma::mat train_outputs = outputs.rows(trainInd);
+        arma::mat test_inputs = inputs.rows(testInd);
+        arma::mat test_outputs = outputs.rows(testInd);
 
-        for (int lambda_index = 0; lambda_index < CV_grid.size(); lambda_index++) {
-            double lambda = CV_grid[lambda_index];
-            arma::mat fit = accel_nuclear_gradient_cpp(train_inputs, train_outputs, lambda, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects);
+        for (size_t lambda_index = 0; lambda_index < lambda_grid.size(); lambda_index++) {
+            // Create a new SEXP for the current lambda value
+            SEXP lambda_val = Rcpp::wrap(lambda_grid[lambda_index]);
+            
+            arma::mat fit = accel_nuclear_gradient_cpp(train_inputs, train_outputs, lambda_val, 
+                                                     Lipschitz, iterations, etol, gamma, 
+                                                     symmetrize, fixed_effects);
+            
             arma::mat predicted_valid = fit * test_inputs.t();
-            double error_valid = arma::mean(arma::square(predicted_valid - test_outputs));
-            CV_errors(lambda_index, fold) = error_valid;
+            arma::vec errors = vectorise(predicted_valid - test_outputs);
+            double mse = arma::mean(arma::square(errors));
+            CV_errors(lambda_index, fold) = mse;
         }
     }
-    double best_lambda = CV_grid[arma::index_min(arma::mean(CV_errors, 1))];
-    return best_lambda;
+    
+    arma::vec mean_errors = arma::mean(CV_errors, 1);
+    uword best_index = mean_errors.index_min();
+    return lambda_grid[best_index];
 }

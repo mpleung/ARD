@@ -3,6 +3,7 @@
 #include "Ji_Ye_eqs.h"
 #include "matrix_regression.h"
 #include "matrix_functions.h"
+#include "loop_wrappers.h"
 
 using namespace Rcpp;
 using namespace arma;
@@ -31,7 +32,7 @@ arma::mat accel_nuclear_gradient_cpp(const arma::mat& inputs,
                                    const int iterations = 5000,
                                    const double etol = 1e-5,
                                    const double gamma = 2.0,
-                                   const bool symmetrize = true,
+                                   const bool symmetrized = true,
                                    const bool fixed_effects = false) {
     
     // Get dimensions
@@ -68,7 +69,7 @@ arma::mat accel_nuclear_gradient_cpp(const arma::mat& inputs,
     
     // Initialize matrices
     arma::mat Z = arma::randu(N, M);  // Random uniform initialization
-    if (symmetrize) {
+    if (symmetrized) {
         Z = symmetrize(Z);
     }
     
@@ -107,8 +108,8 @@ arma::mat accel_nuclear_gradient_cpp(const arma::mat& inputs,
     }
     
     // Final symmetrization if requested
-    if (symmetrize) {
-        W = symmetrize_matrix(W);
+    if (symmetrized) {
+        W = symmetrize(W);
     }
     
     // Ensure non-negative values
