@@ -7,7 +7,7 @@
 accel_nuclear_gradient_cpp(
   inputs,
   outputs,
-  lambda_sexp,
+  lambda_val,
   Lipschitz = "regression",
   iterations = 5000L,
   etol = 1e-05,
@@ -21,6 +21,8 @@ accel_nuclear_gradient_cpp(
 
 \item{outputs}{A matrix object. ARD survey data (K x M).}
 
+\item{lambda_val}{A double. Initial lambda value.}
+
 \item{Lipschitz}{String. Method for computing Lipschitz constant.}
 
 \item{iterations}{Integer. Maximum number of iterations.}
@@ -29,11 +31,9 @@ accel_nuclear_gradient_cpp(
 
 \item{gamma}{Double. Step size parameter.}
 
+\item{symmetrized}{Boolean. Whether to symmetrize the output.}
+
 \item{fixed_effects}{Boolean. Whether to use fixed effects.}
-
-\item{lambda}{A double or string. Initial lambda value or "NW".}
-
-\item{symmetrize}{Boolean. Whether to symmetrize the output.}
 }
 \value{
 An N x M matrix estimate of network connections.

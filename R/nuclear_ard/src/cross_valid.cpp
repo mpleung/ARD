@@ -1,12 +1,12 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
+#include "cross_valid.h"
+#include "accelerated_descent.h"
 #include "Ji_Ye_eqs.h"
 #include "matrix_regression.h"
-#include "accelerated_descent.h"
 #include "matrix_functions.h"
 #include <algorithm>    // for std::shuffle and std::fill
 #include <random>       // for std::random_device and std::mt19937
-
 
 using namespace Rcpp;
 using namespace arma;
@@ -17,29 +17,27 @@ using namespace std;
 //'
 //' @param inputs A matrix object. ARD census data (K x N).
 //' @param outputs A matrix object. ARD survey data (K x M).
-//' @param lambda A double or string. Initial lambda value or "NW".
 //' @param Lipschitz String. Method for computing Lipschitz constant.
 //' @param iterations Integer. Maximum number of iterations.
 //' @param etol Double. Error tolerance.
 //' @param gamma Double. Step size parameter.
-//' @param symmetrize Boolean. Whether to symmetrize the output.
+//' @param symmetrized Boolean. Whether to symmetrize the output.
 //' @param fixed_effects Boolean. Whether to use fixed effects.
 //' @param CV_grid NumericVector. Grid of lambda values to use for cross-validation. If not provided, defaults to a sequence from 0.01 to 10 with step size 0.01.
 //' @param CV_folds Integer. Number of folds to use for cross-validation. Defaults to 5.
 //' @return A double. The optimal lambda value to use for network estimation. 
 //' @export
 // [[Rcpp::export]]
-double cross_validation(const arma::mat& inputs, 
+double cross_validation_cpp(const arma::mat& inputs, 
     const arma::mat& outputs, 
-    const SEXP& lambda_sexp, 
-    const std::string& Lipschitz = "regression", 
-    const int iterations = 5000, 
-    const double etol = 1e-5, 
-    const double gamma = 2.0, 
-    const bool symmetrize = true, 
-    const bool fixed_effects = false, 
-    const Rcpp::NumericVector& CV_grid = Rcpp::NumericVector::create(), 
-    const int CV_folds = 5) {
+    const std::string& Lipschitz,
+    const int iterations,
+    const double etol,
+    const double gamma,
+    const bool symmetrized,
+    const bool fixed_effects,
+    const Rcpp::NumericVector CV_grid,
+    const int CV_folds) {
 
     // Convert NumericVector to std::vector<double> for internal use
     std::vector<double> lambda_grid;
@@ -90,16 +88,17 @@ double cross_validation(const arma::mat& inputs,
         arma::mat test_inputs = inputs.rows(testInd);
         arma::mat test_outputs = outputs.rows(testInd);
 
+
         for (size_t lambda_index = 0; lambda_index < lambda_grid.size(); lambda_index++) {
             // Create a new SEXP for the current lambda value
-            SEXP lambda_val = Rcpp::wrap(lambda_grid[lambda_index]);
+            double lambda_val = lambda_grid[lambda_index];
             
-            arma::mat fit = accel_nuclear_gradient_cpp(train_inputs, train_outputs, lambda_val, 
-                                                     Lipschitz, iterations, etol, gamma, 
-                                                     symmetrize, fixed_effects);
+            // Fit model on training data
+            arma::mat fit = accel_nuclear_gradient_cpp(train_inputs, train_outputs, lambda_val, Lipschitz, iterations, etol, gamma, symmetrized, fixed_effects);
             
             arma::mat predicted_valid = fit * test_inputs.t();
-            arma::vec errors = vectorise(predicted_valid - test_outputs);
+
+            arma::vec errors = vectorise(predicted_valid.t() - test_outputs);
             double mse = arma::mean(arma::square(errors));
             CV_errors(lambda_index, fold) = mse;
         }

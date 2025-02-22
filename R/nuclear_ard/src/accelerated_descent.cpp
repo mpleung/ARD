@@ -15,19 +15,19 @@ using namespace std;
 //'
 //' @param inputs A matrix object. ARD census data (K x N).
 //' @param outputs A matrix object. ARD survey data (K x M).
-//' @param lambda A double or string. Initial lambda value or "NW".
+//' @param lambda_val A double. Initial lambda value.
 //' @param Lipschitz String. Method for computing Lipschitz constant.
 //' @param iterations Integer. Maximum number of iterations.
 //' @param etol Double. Error tolerance.
 //' @param gamma Double. Step size parameter.
-//' @param symmetrize Boolean. Whether to symmetrize the output.
+//' @param symmetrized Boolean. Whether to symmetrize the output.
 //' @param fixed_effects Boolean. Whether to use fixed effects.
 //' @return An N x M matrix estimate of network connections.
 //' @export
 // [[Rcpp::export]]
 arma::mat accel_nuclear_gradient_cpp(const arma::mat& inputs,
                                    const arma::mat& outputs,
-                                   const SEXP& lambda_sexp,
+                                   const double lambda_val,
                                    const std::string& Lipschitz = "regression",
                                    const int iterations = 5000,
                                    const double etol = 1e-5,
@@ -37,20 +37,7 @@ arma::mat accel_nuclear_gradient_cpp(const arma::mat& inputs,
     
     // Get dimensions
     int N = inputs.n_cols;  // village size
-    int M = outputs.n_cols; // number of households
-    int K = outputs.n_rows; // number of characteristics
-    
-    // Initialize lambda
-    double lambda_val;
-    if (TYPEOF(lambda_sexp) == STRSXP && Rcpp::as<std::string>(lambda_sexp) == "NW") {
-        // If lambda is "NW", compute it
-        lambda_val = 2.0 * (std::sqrt(M) + std::sqrt(N) + 1.0) * (std::sqrt(N) + std::sqrt(K));
-    } else if (TYPEOF(lambda_sexp) == REALSXP) {
-        lambda_val = as<double>(lambda_sexp);
-    } else {
-        throw std::runtime_error("Invalid lambda option. Use 'NW' or a numeric value.");
-    }
-    
+    int M = outputs.n_cols; // number of households    
     // Compute Lipschitz constant
     double L;
     if (Lipschitz == "regression") {
@@ -76,17 +63,19 @@ arma::mat accel_nuclear_gradient_cpp(const arma::mat& inputs,
     arma::mat W = Z;
     arma::rowvec fixed_effects_vector = arma::zeros<arma::rowvec>(N);
     
+    double lambda = lambda_val;
+
     // Main iteration loop
     for (int i = 0; i < iterations; i++) {
         // Update Lipschitz constant if using JiYe method
         if (Lipschitz == "JiYe") {
-            Rcpp::List JiYe_values = compute_lipschitz(inputs, outputs, lambda_val, L, Z, gamma);
+            Rcpp::List JiYe_values = compute_lipschitz(inputs, outputs, lambda, L, Z, gamma);
             L = as<double>(JiYe_values["L_bar"]);
-            lambda_val = as<double>(JiYe_values["lambda"]);
+            lambda = as<double>(JiYe_values["lambda"]);
         }
         
         // Update iteration values
-        Rcpp::List value_iterator = compute_iteration(inputs, outputs, lambda_val, L, Z, alpha, W, etol, 
+        Rcpp::List value_iterator = compute_iteration(inputs, outputs, lambda, L, Z, alpha, W, etol, 
                                                     fixed_effects, fixed_effects_vector);
         
         W = as<arma::mat>(value_iterator["W"]);

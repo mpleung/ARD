@@ -43,7 +43,7 @@ accel_nuclear_gradient <- function(inputs, outputs, lambda, Lipschitz = "regress
   if (is.numeric(iterations) == FALSE) {
     stop("iterations must be a numeric value. See documentation for details.")
   }
-  if (is.numeric(lambda) == FALSE) {
+  if (is.numeric(lambda) == FALSE && lambda != "NW") {
     stop("lambda must be either 'NW' or a numeric value. See documentation for details.")
   }
   if (is.numeric(etol) == FALSE) {
@@ -161,10 +161,10 @@ matrix_regression <- function(inputs, outputs, iterations = 5000, etol = 10e-05,
   symmetrize <- TRUE
   gamma <- 2.0
   if (CV == FALSE) {
-    W <- accel_nuclear_gradient_cpp(inputs, outputs, lambda, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects)
+    W <- accel_nuclear_gradient_wrapper(inputs, outputs, lambda, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects)
   } else {
-    optimal_lambda <- cross_validation(inputs, outputs, CV_grid, CV_folds)
-    W <- accel_nuclear_gradient_cpp(inputs, outputs, optimal_lambda, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects)
+    optimal_lambda <- cross_validation_wrapper(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
+    W <- accel_nuclear_gradient_wrapper(inputs, outputs, optimal_lambda, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects)
   }
 
   return(W)
