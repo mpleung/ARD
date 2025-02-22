@@ -38,7 +38,7 @@ using namespace std;
 
 double obj_func(const arma::mat& inputs, const arma::mat& outputs, const arma::mat& W_k) {
   // First, check that input parameters are valid.
-  bool validation = obj_func_testing(inputs, outputs, W_k);
+  obj_func_testing(inputs, outputs, W_k);
 
   // We want to compute square of Frobenius norm of y - AX. Thus, we must first
   // compute y - AX.
@@ -73,7 +73,7 @@ double obj_func(const arma::mat& inputs, const arma::mat& outputs, const arma::m
 
 arma::mat obj_func_grad(const arma::mat& inputs, const arma::mat& outputs, const arma::mat& W_k) {
     // First, check that input parameters are valid.
-    bool validation = obj_func_testing(inputs, outputs, W_k);
+    obj_func_testing(inputs, outputs, W_k);
 
     // To avoid long names, give compact matrix notation to variables
     arma::mat X = inputs;
@@ -116,8 +116,8 @@ arma::mat obj_func_grad(const arma::mat& inputs, const arma::mat& outputs, const
 
 double obj_func_approx(const arma::mat& inputs, const arma::mat& outputs, const arma::mat& W_k, const arma::mat& W_Kplus1, const double& mu) {
     // First, check that input parameters are valid.
-    bool validation = obj_func_testing(inputs, outputs, W_k);
-    bool validation2 = obj_func_testing(inputs, outputs, W_Kplus1);
+    obj_func_testing(inputs, outputs, W_k);
+    obj_func_testing(inputs, outputs, W_Kplus1);
 
     // Equation (7) has three terms. Variable names will
     // refer to them by order.
@@ -158,7 +158,7 @@ arma::mat next_W_func(const arma::mat& inputs, const arma::mat& outputs, const d
 //  First, check that input parameters are valid.
 //  Many checks are the same as for the regular objective function,
 //  so we can re-use obj_func.testing.
-    bool validation = obj_func_testing(inputs, outputs, W_k);
+    obj_func_testing(inputs, outputs, W_k);
 
 // Preliminary: Get network size N
     int N = W_k.n_rows;
@@ -209,6 +209,5 @@ arma::mat next_W_func(const arma::mat& inputs, const arma::mat& outputs, const d
 
 //   Return arg min value, based on Thm 3.1
     return argmin;
-
 }
 

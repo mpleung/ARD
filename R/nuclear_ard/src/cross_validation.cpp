@@ -24,8 +24,8 @@ using namespace std;
 //' @param gamma Double. Step size parameter.
 //' @param symmetrize Boolean. Whether to symmetrize the output.
 //' @param fixed_effects Boolean. Whether to use fixed effects.
-//' @param CV_grid A vector. This is the grid of lambda values to use for cross-validation. Set by default to seq(0.01, 10, by=0.01).
-//' @param CV_folds A scalar (integer) value. This is the number of folds to use for cross-validation. Set by default to 5.
+//' @param CV_grid A vector of doubles. Grid of lambda values to use for cross-validation. If not provided, defaults to a sequence from 0.01 to 10 with step size 0.01.
+//' @param CV_folds A scalar (integer) value. Number of folds to use for cross-validation. Defaults to 5.
 //' @return A double. The optimal lambda value to use for network estimation. 
 //' @export
 // [[Rcpp::export]]
@@ -77,8 +77,11 @@ double cross_validation(const arma::mat& inputs,
             }
         }
         
-        arma::uvec trainInd = arma::conv_to<arma::uvec>::from(arma::vec(train_idx));
-        arma::uvec testInd = arma::conv_to<arma::uvec>::from(arma::vec(test_idx));
+        // Convert indices to uvec using arma::uvec constructor
+        arma::uvec trainInd(train_idx.size());
+        arma::uvec testInd(test_idx.size());
+        for(size_t i = 0; i < train_idx.size(); ++i) trainInd[i] = train_idx[i];
+        for(size_t i = 0; i < test_idx.size(); ++i) testInd[i] = test_idx[i];
 
         arma::mat train_inputs = inputs.rows(trainInd);
         arma::mat train_outputs = outputs.rows(trainInd);

@@ -4,7 +4,16 @@
 \alias{matrix_regression}
 \title{Matrix regression function for ARD}
 \usage{
-matrix_regression(inputs, outputs, iterations = 5000, etol = 1e-04)
+matrix_regression(
+  inputs,
+  outputs,
+  iterations = 5000,
+  etol = 1e-04,
+  fixed_effects = FALSE,
+  CV = FALSE,
+  CV_grid = seq(0.01, 10, by = 0.01),
+  CV_folds = 5
+)
 }
 \arguments{
 \item{inputs}{A matrix object. This contains ARD census data in matrix form.
@@ -19,6 +28,14 @@ specifies should occur. Set by default to 5000.}
 \item{etol}{A scaler. It is the error tolerance for the algorithm. The algorithm will terminate
 when either the maximum number of iterations has been met or the mean absolute error between iterations
 is below etol.}
+
+\item{fixed_effects}{A boolean value. This captures whether to implement node-level fixed effects.}
+
+\item{CV}{A boolean value. This captures whether to implement cross-validation.}
+
+\item{CV_grid}{A vector. This is the grid of lambda values to use for cross-validation. Set by default to seq(0.01, 10, by=0.01).}
+
+\item{CV_folds}{A scalar (integer) value. This is the number of folds to use for cross-validation. Set by default to 5.}
 }
 \value{
 An N x M matrix estimate of network connections.

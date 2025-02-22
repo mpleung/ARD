@@ -48,8 +48,6 @@ List compute_lipschitz(const arma::mat& inputs, const arma::mat& outputs, double
     double F_value = obj_func(inputs, outputs, plZ);
     double Q_value = obj_func_approx(inputs, outputs, Z, plZ, L_bar);
 
-    int j = 1;
-
     while (F_value > Q_value) {
         // Update L bar, as stated in algorithm.
         L_bar = gamma * L_bar;
@@ -58,13 +56,10 @@ List compute_lipschitz(const arma::mat& inputs, const arma::mat& outputs, double
         plZ = next_W_func(inputs, outputs, lambda, L_bar, Z);
         F_value = obj_func(inputs, outputs, plZ);
         Q_value = obj_func_approx(inputs, outputs, Z, plZ, L_bar);
-        j++;
     }
 
     return Rcpp::List::create(Rcpp::Named("lambda") = lambda, 
                             Rcpp::Named("L_bar") = L_bar);
-
-
 }
 
 

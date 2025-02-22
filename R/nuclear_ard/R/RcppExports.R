@@ -29,8 +29,8 @@ accel_nuclear_gradient_cpp <- function(inputs, outputs, lambda_sexp, Lipschitz =
 #' @param gamma Double. Step size parameter.
 #' @param symmetrize Boolean. Whether to symmetrize the output.
 #' @param fixed_effects Boolean. Whether to use fixed effects.
-#' @param CV_grid A vector. This is the grid of lambda values to use for cross-validation. Set by default to seq(0.01, 10, by=0.01).
-#' @param CV_folds A scalar (integer) value. This is the number of folds to use for cross-validation. Set by default to 5.
+#' @param CV_grid A vector of doubles. Grid of lambda values to use for cross-validation. If not provided, defaults to a sequence from 0.01 to 10 with step size 0.01.
+#' @param CV_folds A scalar (integer) value. Number of folds to use for cross-validation. Defaults to 5.
 #' @return A double. The optimal lambda value to use for network estimation. 
 #' @export
 cross_validation <- function(inputs, outputs, lambda_sexp, Lipschitz = "regression", iterations = 5000L, etol = 1e-5, gamma = 2.0, symmetrize = TRUE, fixed_effects = FALSE, CV_grid, CV_folds = 5L) {

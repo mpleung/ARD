@@ -12,7 +12,8 @@ accel_nuclear_gradient(
   iterations = 5000,
   etol = 1e-04,
   gamma = 2,
-  symmetrize = TRUE
+  symmetrize = TRUE,
+  fixed_effects = FALSE
 )
 }
 \arguments{
@@ -39,6 +40,8 @@ is below etol.}
 
 \item{symmetrize}{A boolean value. This captures whether to implement the aforementioned modified
 gradient descent algorithm..}
+
+\item{fixed_effects}{A boolean value. This captures whether to implement node-level fixed effects.}
 }
 \value{
 An N x M matrix estimate of network connections.
