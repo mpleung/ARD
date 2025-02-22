@@ -14,7 +14,7 @@ cross_validation(
   gamma = 2,
   symmetrize = TRUE,
   fixed_effects = FALSE,
-  CV_grid,
+  CV_grid = as.numeric(c()),
   CV_folds = 5L
 )
 }
@@ -35,9 +35,9 @@ cross_validation(
 
 \item{fixed_effects}{Boolean. Whether to use fixed effects.}
 
-\item{CV_grid}{A vector of doubles. Grid of lambda values to use for cross-validation. If not provided, defaults to a sequence from 0.01 to 10 with step size 0.01.}
+\item{CV_grid}{NumericVector. Grid of lambda values to use for cross-validation. If not provided, defaults to a sequence from 0.01 to 10 with step size 0.01.}
 
-\item{CV_folds}{A scalar (integer) value. Number of folds to use for cross-validation. Defaults to 5.}
+\item{CV_folds}{Integer. Number of folds to use for cross-validation. Defaults to 5.}
 
 \item{lambda}{A double or string. Initial lambda value or "NW".}
 }

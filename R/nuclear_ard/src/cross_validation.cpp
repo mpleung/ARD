@@ -24,8 +24,8 @@ using namespace std;
 //' @param gamma Double. Step size parameter.
 //' @param symmetrize Boolean. Whether to symmetrize the output.
 //' @param fixed_effects Boolean. Whether to use fixed effects.
-//' @param CV_grid A vector of doubles. Grid of lambda values to use for cross-validation. If not provided, defaults to a sequence from 0.01 to 10 with step size 0.01.
-//' @param CV_folds A scalar (integer) value. Number of folds to use for cross-validation. Defaults to 5.
+//' @param CV_grid NumericVector. Grid of lambda values to use for cross-validation. If not provided, defaults to a sequence from 0.01 to 10 with step size 0.01.
+//' @param CV_folds Integer. Number of folds to use for cross-validation. Defaults to 5.
 //' @return A double. The optimal lambda value to use for network estimation. 
 //' @export
 // [[Rcpp::export]]
@@ -38,16 +38,18 @@ double cross_validation(const arma::mat& inputs,
     const double gamma = 2.0, 
     const bool symmetrize = true, 
     const bool fixed_effects = false, 
-    const std::vector<double>& CV_grid = std::vector<double>(), 
+    const Rcpp::NumericVector& CV_grid = Rcpp::NumericVector::create(), 
     const int CV_folds = 5) {
 
-    std::vector<double> lambda_grid = CV_grid;
-    // If CV_grid was not provided, create default sequence
-    if (lambda_grid.empty()) {
+    // Convert NumericVector to std::vector<double> for internal use
+    std::vector<double> lambda_grid;
+    if (CV_grid.length() == 0) {
         lambda_grid.reserve(1000);
         for(int i = 1; i <= 1000; ++i) {
             lambda_grid.push_back(i * 0.01);  // Creates sequence from 0.01 to 10
         }
+    } else {
+        lambda_grid.assign(CV_grid.begin(), CV_grid.end());
     }
 
     int K = inputs.n_rows;

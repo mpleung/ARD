@@ -31,7 +31,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // cross_validation
-double cross_validation(const arma::mat& inputs, const arma::mat& outputs, const SEXP& lambda_sexp, const std::string& Lipschitz, const int iterations, const double etol, const double gamma, const bool symmetrize, const bool fixed_effects, const std::vector<double>& CV_grid, const int CV_folds);
+double cross_validation(const arma::mat& inputs, const arma::mat& outputs, const SEXP& lambda_sexp, const std::string& Lipschitz, const int iterations, const double etol, const double gamma, const bool symmetrize, const bool fixed_effects, const Rcpp::NumericVector& CV_grid, const int CV_folds);
 RcppExport SEXP _nuclearARD_cross_validation(SEXP inputsSEXP, SEXP outputsSEXP, SEXP lambda_sexpSEXP, SEXP LipschitzSEXP, SEXP iterationsSEXP, SEXP etolSEXP, SEXP gammaSEXP, SEXP symmetrizeSEXP, SEXP fixed_effectsSEXP, SEXP CV_gridSEXP, SEXP CV_foldsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -45,7 +45,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double >::type gamma(gammaSEXP);
     Rcpp::traits::input_parameter< const bool >::type symmetrize(symmetrizeSEXP);
     Rcpp::traits::input_parameter< const bool >::type fixed_effects(fixed_effectsSEXP);
-    Rcpp::traits::input_parameter< const std::vector<double>& >::type CV_grid(CV_gridSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type CV_grid(CV_gridSEXP);
     Rcpp::traits::input_parameter< const int >::type CV_folds(CV_foldsSEXP);
     rcpp_result_gen = Rcpp::wrap(cross_validation(inputs, outputs, lambda_sexp, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds));
     return rcpp_result_gen;
