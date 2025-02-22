@@ -71,7 +71,7 @@ double cross_validation_cpp(const arma::mat& inputs,
     // To do so, print the index currently being computed.
     // Delete the previous line of output before printing the new one.
     Rcout << "Computing fold: \n " << std::endl;
-    Rcout << "0%" << std::endl;
+    Rcout << "\r 0%" << std::endl;
     for (int fold = 0; fold < CV_folds; fold++) {
         // Create train/test indices
         std::vector<int> train_idx, test_idx;
@@ -108,7 +108,8 @@ double cross_validation_cpp(const arma::mat& inputs,
             CV_errors(lambda_index, fold) = mse;
         }
         double progress = (fold + 1) / CV_folds * 100;
-        Rcout << progress << "%" << std::endl;
+        // Delete the previous line of output before printing the new one.
+        Rcout << "\r" << progress << "%" << std::endl;
     }
     
     arma::vec mean_errors = arma::mean(CV_errors, 1);
