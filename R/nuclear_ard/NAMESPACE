@@ -2,5 +2,7 @@
 useDynLib(nuclearARD)
 export(accel_nuclear_gradient)
 export(matrix_regression)
+export(cross_validation)
+export(accel_nuclear_gradient_cpp)
 import(Matrix)
 importFrom(Rcpp, evalCpp)

@@ -2,22 +2,21 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 compute_lipschitz <- function(inputs, outputs, lambda, L_bar, Z, gamma) {
-    .Call('_nuclearARD_compute_lipschitz', PACKAGE = 'nuclearARD', inputs, outputs, lambda, L_bar, Z, gamma)
+    .Call("_nuclearARD_compute_lipschitz", PACKAGE = "nuclearARD", inputs, outputs, lambda, L_bar, Z, gamma)
 }
 
 compute_iteration <- function(inputs, outputs, lambda, L_bar, Z, alpha, W, etol, fixed_effects_bool, fixed_effects_vector_min1) {
-    .Call('_nuclearARD_compute_iteration', PACKAGE = 'nuclearARD', inputs, outputs, lambda, L_bar, Z, alpha, W, etol, fixed_effects_bool, fixed_effects_vector_min1)
+    .Call("_nuclearARD_compute_iteration", PACKAGE = "nuclearARD", inputs, outputs, lambda, L_bar, Z, alpha, W, etol, fixed_effects_bool, fixed_effects_vector_min1)
 }
 
 nuclear_norm <- function(matrix) {
-    .Call('_nuclearARD_nuclear_norm', PACKAGE = 'nuclearARD', matrix)
+    .Call("_nuclearARD_nuclear_norm", PACKAGE = "nuclearARD", matrix)
 }
 
 symmetrize <- function(matrix) {
-    .Call('_nuclearARD_symmetrize', PACKAGE = 'nuclearARD', matrix)
+    .Call("_nuclearARD_symmetrize", PACKAGE = "nuclearARD", matrix)
 }
 
 matrix_OLS <- function(X, Y) {
-    .Call('_nuclearARD_matrix_OLS', PACKAGE = 'nuclearARD', X, Y)
+    .Call("_nuclearARD_matrix_OLS", PACKAGE = "nuclearARD", X, Y)
 }
-
