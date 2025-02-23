@@ -30,26 +30,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// cross_validation_cpp
-double cross_validation_cpp(const arma::mat& inputs, const arma::mat& outputs, const std::string& Lipschitz, const int iterations, const double etol, const double gamma, const bool symmetrized, const bool fixed_effects, const Rcpp::NumericVector CV_grid, const int CV_folds);
-RcppExport SEXP _nuclearARD_cross_validation_cpp(SEXP inputsSEXP, SEXP outputsSEXP, SEXP LipschitzSEXP, SEXP iterationsSEXP, SEXP etolSEXP, SEXP gammaSEXP, SEXP symmetrizedSEXP, SEXP fixed_effectsSEXP, SEXP CV_gridSEXP, SEXP CV_foldsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type inputs(inputsSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type outputs(outputsSEXP);
-    Rcpp::traits::input_parameter< const std::string& >::type Lipschitz(LipschitzSEXP);
-    Rcpp::traits::input_parameter< const int >::type iterations(iterationsSEXP);
-    Rcpp::traits::input_parameter< const double >::type etol(etolSEXP);
-    Rcpp::traits::input_parameter< const double >::type gamma(gammaSEXP);
-    Rcpp::traits::input_parameter< const bool >::type symmetrized(symmetrizedSEXP);
-    Rcpp::traits::input_parameter< const bool >::type fixed_effects(fixed_effectsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type CV_grid(CV_gridSEXP);
-    Rcpp::traits::input_parameter< const int >::type CV_folds(CV_foldsSEXP);
-    rcpp_result_gen = Rcpp::wrap(cross_validation_cpp(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrized, fixed_effects, CV_grid, CV_folds));
-    return rcpp_result_gen;
-END_RCPP
-}
 // compute_lipschitz
 List compute_lipschitz(const arma::mat& inputs, const arma::mat& outputs, double lambda, double L_bar, const arma::mat& Z, const double gamma);
 RcppExport SEXP _nuclearARD_compute_lipschitz(SEXP inputsSEXP, SEXP outputsSEXP, SEXP lambdaSEXP, SEXP L_barSEXP, SEXP ZSEXP, SEXP gammaSEXP) {
@@ -123,7 +103,6 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_nuclearARD_accel_nuclear_gradient_cpp", (DL_FUNC) &_nuclearARD_accel_nuclear_gradient_cpp, 9},
-    {"_nuclearARD_cross_validation_cpp", (DL_FUNC) &_nuclearARD_cross_validation_cpp, 10},
     {"_nuclearARD_compute_lipschitz", (DL_FUNC) &_nuclearARD_compute_lipschitz, 6},
     {"_nuclearARD_compute_iteration", (DL_FUNC) &_nuclearARD_compute_iteration, 10},
     {"_nuclearARD_nuclear_norm", (DL_FUNC) &_nuclearARD_nuclear_norm, 1},

@@ -54,7 +54,7 @@ cross_validation <- function(inputs, outputs, Lipschitz, iterations, etol, gamma
             lambda_val <- lambda_grid[l]
 
             # Fit the model on training data. Replace accel_nuclear_gradient with your R implementation.
-            fit <- accel_nuclear_gradient(train_inputs, train_outputs, lambda_val, Lipschitz, iterations, etol, gamma, symmetrized, fixed_effects)
+            fit <- accel_nuclear_gradient_wrapper(train_inputs, train_outputs, lambda_val, Lipschitz, iterations, etol, gamma, symmetrized, fixed_effects)
 
             # Predict on test data. If fit is a matrix, then prediction is computed as described.
             # In C++: predicted_valid = t(fit %*% t(test_inputs)).
@@ -128,7 +128,7 @@ cross_validation_mse <- function(inputs, outputs, Lipschitz, iterations, etol, g
 
 
         # Fit the model on training data. Replace accel_nuclear_gradient with your R implementation.
-        fit <- accel_nuclear_gradient(train_inputs, train_outputs, lambda, Lipschitz, iterations, etol, gamma, symmetrized, fixed_effects)
+        fit <- accel_nuclear_gradient_wrapper(train_inputs, train_outputs, lambda, Lipschitz, iterations, etol, gamma, symmetrized, fixed_effects)
 
         # Predict on test data. If fit is a matrix, then prediction is computed as described.
         # In C++: predicted_valid = t(fit %*% t(test_inputs)).

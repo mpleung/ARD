@@ -15,44 +15,26 @@
 #' @return An N x M matrix estimate of network connections.
 #' @export
 accel_nuclear_gradient_cpp <- function(inputs, outputs, lambda_val, Lipschitz = "regression", iterations = 5000L, etol = 1e-5, gamma = 2.0, symmetrized = TRUE, fixed_effects = FALSE) {
-    .Call('_nuclearARD_accel_nuclear_gradient_cpp', PACKAGE = 'nuclearARD', inputs, outputs, lambda_val, Lipschitz, iterations, etol, gamma, symmetrized, fixed_effects)
-}
-
-#' Cross validation function for ARD
-#'
-#' @param inputs A matrix object. ARD census data (K x N).
-#' @param outputs A matrix object. ARD survey data (K x M).
-#' @param Lipschitz String. Method for computing Lipschitz constant.
-#' @param iterations Integer. Maximum number of iterations.
-#' @param etol Double. Error tolerance.
-#' @param gamma Double. Step size parameter.
-#' @param symmetrized Boolean. Whether to symmetrize the output.
-#' @param fixed_effects Boolean. Whether to use fixed effects.
-#' @param CV_grid NumericVector. Grid of lambda values to use for cross-validation. If not provided, defaults to a sequence from 0.01 to 10 with step size 0.01.
-#' @param CV_folds Integer. Number of folds to use for cross-validation. Defaults to 5.
-#' @return A double. The optimal lambda value to use for network estimation. 
-#' @export
-cross_validation_cpp <- function(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrized, fixed_effects, CV_grid, CV_folds) {
-    .Call('_nuclearARD_cross_validation_cpp', PACKAGE = 'nuclearARD', inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrized, fixed_effects, CV_grid, CV_folds)
+    .Call(`_nuclearARD_accel_nuclear_gradient_cpp`, inputs, outputs, lambda_val, Lipschitz, iterations, etol, gamma, symmetrized, fixed_effects)
 }
 
 compute_lipschitz <- function(inputs, outputs, lambda, L_bar, Z, gamma) {
-    .Call('_nuclearARD_compute_lipschitz', PACKAGE = 'nuclearARD', inputs, outputs, lambda, L_bar, Z, gamma)
+    .Call(`_nuclearARD_compute_lipschitz`, inputs, outputs, lambda, L_bar, Z, gamma)
 }
 
 compute_iteration <- function(inputs, outputs, lambda, L_bar, Z, alpha, W, etol, fixed_effects_bool, fixed_effects_vector_min1) {
-    .Call('_nuclearARD_compute_iteration', PACKAGE = 'nuclearARD', inputs, outputs, lambda, L_bar, Z, alpha, W, etol, fixed_effects_bool, fixed_effects_vector_min1)
+    .Call(`_nuclearARD_compute_iteration`, inputs, outputs, lambda, L_bar, Z, alpha, W, etol, fixed_effects_bool, fixed_effects_vector_min1)
 }
 
 nuclear_norm <- function(matrix) {
-    .Call('_nuclearARD_nuclear_norm', PACKAGE = 'nuclearARD', matrix)
+    .Call(`_nuclearARD_nuclear_norm`, matrix)
 }
 
 symmetrize <- function(matrix) {
-    .Call('_nuclearARD_symmetrize', PACKAGE = 'nuclearARD', matrix)
+    .Call(`_nuclearARD_symmetrize`, matrix)
 }
 
 matrix_OLS <- function(X, Y) {
-    .Call('_nuclearARD_matrix_OLS', PACKAGE = 'nuclearARD', X, Y)
+    .Call(`_nuclearARD_matrix_OLS`, X, Y)
 }
 

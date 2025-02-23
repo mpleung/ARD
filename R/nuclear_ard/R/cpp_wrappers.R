@@ -29,7 +29,7 @@
 #' @return An N x M matrix estimate of network connections.
 #' @export
 #' @import Matrix
-accel_nuclear_gradient_wrapper <- function(inputs, outputs, lambda, Lipschitz = "regression", iterations = 5000, etol = 10e-05, gamma = 2.0, symmetrize = TRUE, fixed_effects = FALSE) {
+accel_nuclear_gradient <- function(inputs, outputs, lambda, Lipschitz = "regression", iterations = 5000, etol = 10e-05, gamma = 2.0, symmetrize = TRUE, fixed_effects = FALSE) {
     # This function implements Algorithm 2 from "An Accelerated Gradient
     # Method for Trace Norm Minimization" by Ji & Ye (2009)
 
@@ -74,7 +74,7 @@ accel_nuclear_gradient_wrapper <- function(inputs, outputs, lambda, Lipschitz = 
 
 #' Cross validation function for ARD (C++ wrapper)
 #'
-#' \code{cross_validation} implements the cross validation algorithm outlined in Alidaee et al. (2020).
+#' \code{cross_validation_wrapper} implements the cross validation algorithm outlined in Alidaee et al. (2020).
 #'
 #' @param inputs A matrix object. This contains ARD census data in matrix form.
 #' @param outputs A matrix object. This contains the ARD survey data

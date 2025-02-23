@@ -11,7 +11,7 @@ matrix_regression(
   etol = 1e-04,
   fixed_effects = FALSE,
   CV = FALSE,
-  CV_grid = seq(0.01, 10, by = 0.01),
+  CV_grid = NULL,
   CV_folds = 5
 )
 }

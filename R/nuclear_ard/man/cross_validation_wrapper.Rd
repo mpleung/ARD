@@ -33,7 +33,7 @@ in matrix form with size K x M, where N > M = number of households receiving ARD
 
 \item{fixed_effects}{Boolean. Whether to use fixed effects.}
 
-\item{CV_grid}{NumericVector. Grid of lambda values to use for cross-validation. If not provided, defaults to a sequence from 0.01 to 10 with step size 0.01.}
+\item{CV_grid}{NumericVector. Grid of lambda values to use for cross-validation. If not provided, a dynamic grid search is conducted.}
 
 \item{CV_folds}{Integer. Number of folds to use for cross-validation. Defaults to 5.}
 

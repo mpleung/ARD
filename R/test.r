@@ -36,7 +36,7 @@ Adj_Matrix_Construction <- function(P_mat) {
     return(list(P_mat = P_mat, A_mat = A_mat))
 }
 
-N <- 300
+N <- 200
 K <- 6
 
 net <- generate_RDP(N)
