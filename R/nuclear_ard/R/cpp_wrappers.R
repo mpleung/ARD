@@ -90,54 +90,132 @@ accel_nuclear_gradient_wrapper <- function(inputs, outputs, lambda, Lipschitz = 
 #' @return A double. The optimal lambda value to use for network estimation.
 #' @export
 #' @import Matrix
+# cross_validation_wrapper <- function(inputs, outputs, Lipschitz = "regression", iterations = 5000, etol = 10e-05, gamma = 2.0, symmetrize = TRUE, fixed_effects = FALSE, CV_grid = NULL, CV_folds = 5) {
+#     if (CV_folds >= dim(inputs)[1]) {
+#         stop("CV_folds must be less than the number of ARD traits.")
+#     }
+#     # If CV_grid is not provided, conduct a dynamic grid search.
+#     if (is.null(CV_grid)) {
+#         dynamic <- TRUE
+#         grid_size <- 20
+#         CV_grid <- seq(0, 200, grid_size)
+#         min_value <- 0.00001
+#         CV_grid[1] <- min_value
+#         print(paste0("First estimate grid: ", CV_grid[1], " to ", CV_grid[length(CV_grid)]))
+#         estimate <- cross_validation(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
+#         print(paste0("Estimate: ", estimate$best_lambda, " Var Error: ", estimate$var_errors, " Min Error: ", estimate$min_error))
+#         # Rerun with new CV_grid based around the estimate.
+#         margin <- grid_size
+#         grid_size <- 5
+#         min_estimate <- max(min_value, floor(estimate$best_lambda) - margin)
+#         max_estimate <- ceiling(estimate$best_lambda) + margin
+#         CV_grid <- seq(min_estimate, max_estimate, grid_size)
+#         print(paste0("Second estimate grid: ", CV_grid[1], " to ", CV_grid[length(CV_grid)]))
+#         estimate <- cross_validation(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
+#         print(paste0("Estimate: ", estimate$best_lambda, " Var Error: ", estimate$var_errors, " Min Error: ", estimate$min_error))
+#         # Rerun with new CV_grid based around the estimate.
+#         margin <- grid_size
+#         grid_size <- 1
+#         min_estimate <- max(min_value, floor(estimate$best_lambda) - margin)
+#         max_estimate <- ceiling(estimate$best_lambda) + margin
+#         CV_grid <- seq(min_estimate, max_estimate, grid_size)
+#         print(paste0("Third estimate grid: ", CV_grid[1], " to ", CV_grid[length(CV_grid)]))
+#         estimate <- cross_validation(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
+#         print(paste0("Estimate: ", estimate$best_lambda, " Var Error: ", estimate$var_errors, " Min Error: ", estimate$min_error))
+#         # Rerun with new CV_grid based around the estimate.
+#         margin <- grid_size
+#         grid_size <- 0.5
+#         min_estimate <- max(min_value, round(estimate$best_lambda - margin, digits = 1))
+#         max_estimate <- round(estimate$best_lambda + margin, digits = 1)
+#         CV_grid <- seq(min_estimate, max_estimate, grid_size)
+#         print(paste0("Fourth estimate grid: ", CV_grid[1], " to ", CV_grid[length(CV_grid)]))
+#         estimate <- cross_validation(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
+#         print(paste0("Estimate: ", estimate$best_lambda, " Var Error: ", estimate$var_errors, " Min Error: ", estimate$min_error))
+#         # Rerun with new CV_grid based around the estimate.
+#         margin <- grid_size
+#         grid_size <- 0.1
+#         min_estimate <- max(min_value, round(estimate$best_lambda - margin, digits = 1))
+#         max_estimate <- round(estimate$best_lambda + margin, digits = 1)
+#         CV_grid <- seq(min_estimate, max_estimate, grid_size)
+#         print(paste0("Fifth estimate grid: ", CV_grid[1], " to ", CV_grid[length(CV_grid)]))
+#         estimate <- cross_validation(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
+#         print(paste0("Estimate: ", estimate$best_lambda, " Var Error: ", estimate$var_errors, " Min Error: ", estimate$min_error))
+#         # Rerun with new CV_grid based around the estimate.
+#         margin <- grid_size
+#         grid_size <- 0.05
+#         min_estimate <- max(min_value, round(estimate$best_lambda - margin, digits = 2))
+#         max_estimate <- round(estimate$best_lambda + margin, digits = 2)
+#         CV_grid <- seq(min_estimate, max_estimate, grid_size)
+#         print(paste0("Sixth estimate grid: ", CV_grid[1], " to ", CV_grid[length(CV_grid)]))
+#         estimate <- cross_validation(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
+#         print(paste0("Estimate: ", estimate$best_lambda, " Var Error: ", estimate$var_errors, " Min Error: ", estimate$min_error))
+#         # Rerun with new CV_grid based around the estimate.
+#         margin <- grid_size
+#         grid_size <- 0.01
+#         min_estimate <- max(min_value, round(estimate$best_lambda - margin, digits = 2))
+#         max_estimate <- round(estimate$best_lambda + margin, digits = 2)
+#         CV_grid <- seq(min_estimate, max_estimate, grid_size)
+#         print(paste0("Final estimate grid: ", CV_grid[1], " to ", CV_grid[length(CV_grid)]))
+#         estimate <- cross_validation(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
+#         print(paste0("Estimate: ", estimate$best_lambda, " Var Error: ", estimate$var_errors, " Min Error: ", estimate$min_error))
+#         return(estimate$best_lambda)
+
+#         CV_grid <- seq(0.01, 0.31, 0.01)
+#         print(paste0("Benchmark estimate grid: ", CV_grid[1], " to ", CV_grid[length(CV_grid)]))
+#         estimate <- cross_validation(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
+#         print(paste0("Estimate: ", estimate$best_lambda, " Var Error: ", estimate$var_errors, " Min Error: ", estimate$min_error))
+#     } else {
+#         dynamic <- FALSE
+#         estimate <- cross_validation(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
+#     }
+#     return(estimate$best_lambda)
+# }
 cross_validation_wrapper <- function(inputs, outputs, Lipschitz = "regression", iterations = 5000, etol = 10e-05, gamma = 2.0, symmetrize = TRUE, fixed_effects = FALSE, CV_grid = NULL, CV_folds = 5) {
-    if (is.null(CV_grid)) {
-        dynamic <- TRUE
-        grid_size <- 20
-        CV_grid <- seq(0, 200, grid_size)
-        min_value <- 0.00001
-        CV_grid[1] <- min_value
-        print(paste0("First estimate grid: ", CV_grid[1], " to ", CV_grid[length(CV_grid)]))
-        estimate <- cross_validation_cpp(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
-        print(paste0("Estimate: ", estimate))
-        # Rerun with new CV_grid based around the estimate.
-        margin <- grid_size
-        grid_size <- 5
-        min_estimate <- max(min_value, floor(estimate) - margin)
-        max_estimate <- ceiling(estimate) + margin
-        CV_grid <- seq(min_estimate, max_estimate, grid_size)
-        print(paste0("Second estimate grid: ", CV_grid[1], " to ", CV_grid[length(CV_grid)]))
-        estimate <- cross_validation_cpp(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
-        print(paste0("Estimate: ", estimate))
-        # Rerun with new CV_grid based around the estimate.
-        margin <- grid_size
-        grid_size <- 1
-        min_estimate <- max(min_value, floor(estimate) - margin)
-        max_estimate <- ceiling(estimate) + margin
-        CV_grid <- seq(min_estimate, max_estimate, grid_size)
-        print(paste0("Third estimate grid: ", CV_grid[1], " to ", CV_grid[length(CV_grid)]))
-        estimate <- cross_validation_cpp(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
-        print(paste0("Estimate: ", estimate))
-        # Rerun with new CV_grid based around the estimate.
-        margin <- grid_size * 2
-        grid_size <- 0.1
-        min_estimate <- max(min_value, floor(estimate) - margin)
-        max_estimate <- ceiling(estimate) + margin
-        CV_grid <- seq(min_estimate, max_estimate, grid_size)
-        print(paste0("Fourth estimate grid: ", CV_grid[1], " to ", CV_grid[length(CV_grid)]))
-        estimate <- cross_validation_cpp(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
-        print(paste0("Estimate: ", estimate))
-        # Rerun with new CV_grid based around the estimate.
-        margin <- grid_size * 2
-        grid_size <- 0.01
-        min_estimate <- max(min_value, round(estimate - margin, digits = 1))
-        max_estimate <- round(estimate + margin, digits = 1)
-        CV_grid <- seq(min_estimate, max_estimate, grid_size)
-        print(paste0("Final estimate grid: ", CV_grid[1], " to ", CV_grid[length(CV_grid)]))
-        estimate <- cross_validation_cpp(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
-    } else {
-        dynamic <- FALSE
-        estimate <- cross_validation_cpp(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
+    N <- dim(inputs)[2]
+    K <- dim(inputs)[1]
+    M <- dim(outputs)[2]
+    if (CV_folds >= K) {
+        stop("CV_folds must be less than the number of ARD traits.")
     }
-    return(estimate)
+    if (is.null(CV_grid)) {
+        # objective <- function(lambda) {
+        #     return(cross_validation_mse(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, lambda, CV_folds))
+        # }
+
+        NW_recommended_lambda <- 2 * (sqrt(N) + sqrt(M) + 1) * (sqrt(N) + sqrt(K))
+
+        objective <- function(lambda) {
+            mse <- cross_validation_mse(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, lambda, CV_folds)
+            return(list(Score = -mse, Pred = NA))
+        }
+
+
+        # opt_result <- optimize(objective,
+        #     lower = 0.01,
+        #     upper = 1000,
+        #     maximum = FALSE,
+        #     tol = 0.1
+        # )
+        # # Extract the optimal parameter and its associated MSE
+        # best_param <- opt_result$minimum
+        # best_mse <- opt_result$objective
+
+        OPT_Res <- BayesianOptimization(objective,
+            bounds = list(lambda = c(0.01, NW_recommended_lambda)),
+            init_points = 10, n_iter = 10,
+            acq = "ucb", kappa = 10, eps = 10,
+            verbose = TRUE
+        )
+        best_param <- OPT_Res$Best_Par
+        best_mse <- -OPT_Res$Best_Value
+
+
+        cat("Optimal parameter:", best_param, "\n")
+        cat("Associated average MSE:", best_mse, "\n")
+    } else {
+        output <- cross_validation(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
+        print(paste0("Optimal lambda: ", output$best_lambda, " Min Error: ", output$min_error))
+        best_param <- output$best_lambda
+    }
+    return(best_param)
 }

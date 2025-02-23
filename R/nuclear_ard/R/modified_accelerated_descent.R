@@ -164,7 +164,6 @@ matrix_regression <- function(inputs, outputs, iterations = 5000, etol = 10e-05,
     W <- accel_nuclear_gradient_wrapper(inputs, outputs, lambda, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects)
   } else {
     optimal_lambda <- cross_validation_wrapper(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
-    print(paste0("Optimal lambda: ", optimal_lambda))
     W <- accel_nuclear_gradient_wrapper(inputs, outputs, optimal_lambda, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects)
   }
 

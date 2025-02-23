@@ -7,7 +7,6 @@
 #include "matrix_functions.h"
 #include <algorithm>    // for std::shuffle and std::fill
 #include <random>       // for std::random_device and std::mt19937
-
 using namespace Rcpp;
 using namespace arma;
 using namespace std;
@@ -41,20 +40,11 @@ double cross_validation_cpp(const arma::mat& inputs,
 
     // Convert NumericVector to std::vector<double> for internal use
     std::vector<double> lambda_grid;
-    if (CV_grid.length() == 0) {
-        Rcout << "No lambda grid provided, using default grid." << std::endl;
-        lambda_grid.reserve(1000);
-        for(int i = 1; i <= 1000; ++i) {
-            lambda_grid.push_back(i * 0.01);  // Creates sequence from 0.01 to 10
-        }
-    } else {
-        lambda_grid.assign(CV_grid.begin(), CV_grid.end());
-    }
+
+    lambda_grid.assign(CV_grid.begin(), CV_grid.end());
 
     int K = inputs.n_rows;
-    if (CV_folds > K) {
-        stop("CV_folds must be less than the number of ARD traits.");
-    }
+
     
     // Create fold assignments
     IntegerVector fold_indices(K);
@@ -71,8 +61,6 @@ double cross_validation_cpp(const arma::mat& inputs,
     // Implement a progress bar by having a printed counter.
     // To do so, print the index currently being computed.
     // Delete the previous line of output before printing the new one.
-    Rcout << "Computing fold: \n " << std::endl;
-    Rcout << "\r 0%" << std::endl;
     for (int fold = 0; fold < CV_folds; fold++) {
         // Create train/test indices
         std::vector<int> train_idx, test_idx;
@@ -107,9 +95,6 @@ double cross_validation_cpp(const arma::mat& inputs,
             double mse = arma::mean(arma::square(errors));
             CV_errors(lambda_index, fold) = mse;
         }
-        double progress = (fold + 1) / static_cast<double>(CV_folds) * 100.0;
-        // Delete the previous line of output before printing the new one.
-        Rcout << "\r     \r" << progress << "%" << std::flush;
     }
     
     arma::vec mean_errors = arma::mean(CV_errors, 1);

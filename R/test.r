@@ -17,6 +17,16 @@ generate_HRM <- function(N) {
     HRM_mats <- Adj_Matrix_Construction(DGP_mat)
     return(HRM_mats)
 }
+
+
+generate_RDP <- function(N) {
+    positions <- sqrt(runif(N))
+    P_RDP <- positions * t(replicate(N, positions))
+    RDP_mats <- Adj_Matrix_Construction(P_RDP)
+    return(RDP_mats)
+}
+
+
 Adj_Matrix_Construction <- function(P_mat) {
     N <- nrow(P_mat)
     diag(P_mat) <- 0
@@ -26,10 +36,10 @@ Adj_Matrix_Construction <- function(P_mat) {
     return(list(P_mat = P_mat, A_mat = A_mat))
 }
 
-N <- 100
+N <- 300
 K <- 6
 
-net <- generate_HRM(N)
+net <- generate_RDP(N)
 
 
 types <- matrix(rbinom(K * N, 1, 0.5), nrow = K, ncol = N)
@@ -42,5 +52,14 @@ matrix_reg <- matrix_regression(
     outputs = ARD_mats,
     fixed_effects = TRUE,
     CV = TRUE,
+    CV_folds = 5
+)
+
+matrix_reg <- matrix_regression(
+    inputs = types,
+    outputs = ARD_mats,
+    fixed_effects = TRUE,
+    CV = TRUE,
+    CV_grid = seq(0.01, 10, by = 0.1),
     CV_folds = 5
 )
