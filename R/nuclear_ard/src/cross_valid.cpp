@@ -42,6 +42,7 @@ double cross_validation_cpp(const arma::mat& inputs,
     // Convert NumericVector to std::vector<double> for internal use
     std::vector<double> lambda_grid;
     if (CV_grid.length() == 0) {
+        Rcout << "No lambda grid provided, using default grid." << std::endl;
         lambda_grid.reserve(1000);
         for(int i = 1; i <= 1000; ++i) {
             lambda_grid.push_back(i * 0.01);  // Creates sequence from 0.01 to 10
@@ -93,7 +94,6 @@ double cross_validation_cpp(const arma::mat& inputs,
         arma::mat train_outputs = outputs.rows(trainInd);
         arma::mat test_inputs = inputs.rows(testInd);
         arma::mat test_outputs = outputs.rows(testInd);
-
         for (size_t lambda_index = 0; lambda_index < lambda_grid.size(); lambda_index++) {
             // Create a new SEXP for the current lambda value
             double lambda_val = lambda_grid[lambda_index];
@@ -107,9 +107,9 @@ double cross_validation_cpp(const arma::mat& inputs,
             double mse = arma::mean(arma::square(errors));
             CV_errors(lambda_index, fold) = mse;
         }
-        double progress = (fold + 1) / CV_folds * 100;
+        double progress = (fold + 1) / static_cast<double>(CV_folds) * 100.0;
         // Delete the previous line of output before printing the new one.
-        Rcout << "\r" << progress << "%" << std::endl;
+        Rcout << "\r     \r" << progress << "%" << std::flush;
     }
     
     arma::vec mean_errors = arma::mean(CV_errors, 1);

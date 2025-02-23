@@ -85,15 +85,59 @@ accel_nuclear_gradient_wrapper <- function(inputs, outputs, lambda, Lipschitz = 
 #' @param gamma Double. Step size parameter.
 #' @param symmetrized Boolean. Whether to symmetrize the output.
 #' @param fixed_effects Boolean. Whether to use fixed effects.
-#' @param CV_grid NumericVector. Grid of lambda values to use for cross-validation. If not provided, defaults to a sequence from 0.01 to 10 with step size 0.01.
+#' @param CV_grid NumericVector. Grid of lambda values to use for cross-validation. If not provided, a dynamic grid search is conducted.
 #' @param CV_folds Integer. Number of folds to use for cross-validation. Defaults to 5.
 #' @return A double. The optimal lambda value to use for network estimation.
 #' @export
 #' @import Matrix
 cross_validation_wrapper <- function(inputs, outputs, Lipschitz = "regression", iterations = 5000, etol = 10e-05, gamma = 2.0, symmetrize = TRUE, fixed_effects = FALSE, CV_grid = NULL, CV_folds = 5) {
     if (is.null(CV_grid)) {
-        CV_grid <- seq(0.01, 10, 0.01)
+        dynamic <- TRUE
+        grid_size <- 20
+        CV_grid <- seq(0, 200, grid_size)
+        min_value <- 0.00001
+        CV_grid[1] <- min_value
+        print(paste0("First estimate grid: ", CV_grid[1], " to ", CV_grid[length(CV_grid)]))
+        estimate <- cross_validation_cpp(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
+        print(paste0("Estimate: ", estimate))
+        # Rerun with new CV_grid based around the estimate.
+        margin <- grid_size
+        grid_size <- 5
+        min_estimate <- max(min_value, floor(estimate) - margin)
+        max_estimate <- ceiling(estimate) + margin
+        CV_grid <- seq(min_estimate, max_estimate, grid_size)
+        print(paste0("Second estimate grid: ", CV_grid[1], " to ", CV_grid[length(CV_grid)]))
+        estimate <- cross_validation_cpp(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
+        print(paste0("Estimate: ", estimate))
+        # Rerun with new CV_grid based around the estimate.
+        margin <- grid_size
+        grid_size <- 1
+        min_estimate <- max(min_value, floor(estimate) - margin)
+        max_estimate <- ceiling(estimate) + margin
+        CV_grid <- seq(min_estimate, max_estimate, grid_size)
+        print(paste0("Third estimate grid: ", CV_grid[1], " to ", CV_grid[length(CV_grid)]))
+        estimate <- cross_validation_cpp(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
+        print(paste0("Estimate: ", estimate))
+        # Rerun with new CV_grid based around the estimate.
+        margin <- grid_size * 2
+        grid_size <- 0.1
+        min_estimate <- max(min_value, floor(estimate) - margin)
+        max_estimate <- ceiling(estimate) + margin
+        CV_grid <- seq(min_estimate, max_estimate, grid_size)
+        print(paste0("Fourth estimate grid: ", CV_grid[1], " to ", CV_grid[length(CV_grid)]))
+        estimate <- cross_validation_cpp(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
+        print(paste0("Estimate: ", estimate))
+        # Rerun with new CV_grid based around the estimate.
+        margin <- grid_size * 2
+        grid_size <- 0.01
+        min_estimate <- max(min_value, round(estimate - margin, digits = 1))
+        max_estimate <- round(estimate + margin, digits = 1)
+        CV_grid <- seq(min_estimate, max_estimate, grid_size)
+        print(paste0("Final estimate grid: ", CV_grid[1], " to ", CV_grid[length(CV_grid)]))
+        estimate <- cross_validation_cpp(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
+    } else {
+        dynamic <- FALSE
+        estimate <- cross_validation_cpp(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
     }
-    estimate <- cross_validation_cpp(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
     return(estimate)
 }

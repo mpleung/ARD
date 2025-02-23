@@ -155,7 +155,7 @@ accel_nuclear_gradient <- function(inputs, outputs, lambda, Lipschitz = "regress
 #' @return An N x M matrix estimate of network connections.
 #' @export
 #' @import Matrix
-matrix_regression <- function(inputs, outputs, iterations = 5000, etol = 10e-05, fixed_effects = FALSE, CV = FALSE, CV_grid = seq(0.01, 10, by = 0.01), CV_folds = 5) {
+matrix_regression <- function(inputs, outputs, iterations = 5000, etol = 10e-05, fixed_effects = FALSE, CV = FALSE, CV_grid = NULL, CV_folds = 5) {
   Lipschitz <- "regression"
   lambda <- "NW"
   symmetrize <- TRUE
@@ -164,6 +164,7 @@ matrix_regression <- function(inputs, outputs, iterations = 5000, etol = 10e-05,
     W <- accel_nuclear_gradient_wrapper(inputs, outputs, lambda, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects)
   } else {
     optimal_lambda <- cross_validation_wrapper(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
+    print(paste0("Optimal lambda: ", optimal_lambda))
     W <- accel_nuclear_gradient_wrapper(inputs, outputs, optimal_lambda, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects)
   }
 
