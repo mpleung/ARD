@@ -82,7 +82,23 @@ cross_validation <- function(inputs, outputs, Lipschitz, iterations, etol, gamma
 }
 
 
-
+#' Cross Validation for ARD (R Implementation)
+#'
+#' \code{cross_validation} implements the cross validation algorithm outlined in Alidaee et al. (2020)
+#' for selecting the optimal lambda value in ARD network estimation.
+#'
+#' @param inputs A matrix object. This contains ARD census data in matrix form.
+#' @param outputs A matrix object. This contains the ARD survey data in matrix form.
+#' @param Lipschitz A string. Method for computing the Lipschitz constant ("regression" or "JiYe").
+#' @param iterations An integer. Maximum number of iterations.
+#' @param etol A double. Error tolerance for convergence.
+#' @param gamma A double. Step size parameter.
+#' @param symmetrized A boolean. Whether to symmetrize the output.
+#' @param fixed_effects A boolean. Whether to use fixed effects.
+#' @param CV_grid A NumericVector. Grid of lambda values to use for cross-validation.
+#' @param CV_folds An integer. Number of folds to use for cross-validation.
+#' @return A double. The optimal lambda value to use for network estimation.
+#' @export
 cross_validation_mse <- function(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrized, fixed_effects, lambda, CV_folds) {
     # Ensure CV_grid is numeric
 
