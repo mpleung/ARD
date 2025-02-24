@@ -101,7 +101,18 @@ cross_validation_wrapper <- function(inputs, outputs, Lipschitz = "regression", 
         NW_recommended_lambda <- 2 * (sqrt(N) + sqrt(M) + 1) * (sqrt(N) + sqrt(K))
 
         objective <- function(lambda) {
-            mse <- cross_validation_mse(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, lambda, CV_folds)
+            mse <- cross_validation(inputs,
+                outputs,
+                Lipschitz,
+                iterations,
+                etol,
+                gamma,
+                symmetrize,
+                fixed_effects,
+                CV_folds,
+                method = "mse",
+                lambda = lambda
+            )
             return(list(Score = -mse, Pred = NA))
         }
 
@@ -118,7 +129,19 @@ cross_validation_wrapper <- function(inputs, outputs, Lipschitz = "regression", 
         cat("Optimal parameter:", best_param, "\n")
         cat("Associated average MSE:", best_mse, "\n")
     } else {
-        output <- cross_validation(inputs, outputs, Lipschitz, iterations, etol, gamma, symmetrize, fixed_effects, CV_grid, CV_folds)
+        output <- cross_validation(
+            inputs,
+            outputs,
+            Lipschitz,
+            iterations,
+            etol,
+            gamma,
+            symmetrize,
+            fixed_effects,
+            CV_folds,
+            method = "grid",
+            CV_grid = CV_grid
+        )
         print(paste0("Optimal lambda: ", output$best_lambda, " Min Error: ", output$min_error))
         best_param <- output$best_lambda
     }
