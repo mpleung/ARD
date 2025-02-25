@@ -43,5 +43,5 @@ in matrix form with size K x M, where N > M = number of households receiving ARD
 A double. The optimal lambda value to use for network estimation.
 }
 \description{
-\code{cross_validation} implements the cross validation algorithm outlined in Alidaee et al. (2020).
+\code{cross_validation_wrapper} implements the cross validation algorithm outlined in Alidaee et al. (2020).
 }

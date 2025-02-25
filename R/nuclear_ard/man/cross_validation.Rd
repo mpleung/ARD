@@ -13,8 +13,10 @@ cross_validation(
   gamma,
   symmetrized,
   fixed_effects,
-  CV_grid,
-  CV_folds
+  CV_folds,
+  method = c("grid", "mse"),
+  lambda = NULL,
+  CV_grid = NULL
 )
 }
 \arguments{
@@ -34,14 +36,28 @@ cross_validation(
 
 \item{fixed_effects}{A boolean. Whether to use fixed effects.}
 
-\item{CV_grid}{A NumericVector. Grid of lambda values to use for cross-validation.}
-
 \item{CV_folds}{An integer. Number of folds to use for cross-validation.}
+
+\item{method}{A string. Determines the mode of cross validation.
+Use "grid" to perform cross validation over a grid of lambda values or "mse" to compute the
+cross validation mean squared error for a single lambda value.}
+
+\item{lambda}{A double. A specific lambda value on which to compute the cross validation MSE.
+Required if method = "mse".}
+
+\item{CV_grid}{A NumericVector. Grid of lambda values to use for cross-validation.
+Required if method = "grid".}
 }
 \value{
-A double. The optimal lambda value to use for network estimation.
+If method = "grid", returns a list containing:
+\describe{
+\item{best_lambda}{The lambda value corresponding to the minimum cross validation error.}
+\item{min_error}{The minimum cross validation mean squared error.}
+\item{var_errors}{The variance of the cross validation errors across folds.}
+}
+If method = "mse", returns a double representing the cross validation mean squared error for the provided lambda.
 }
 \description{
-\code{cross_validation} implements the cross validation algorithm outlined in Alidaee et al. (2020)
-for selecting the optimal lambda value in ARD network estimation.
+\code{cross_validation_combined} implements the cross validation algorithm outlined in Alidaee et al. (2020)
+for selecting the optimal lambda value in ARD network estimation or computing mean squared error using cross validation.
 }

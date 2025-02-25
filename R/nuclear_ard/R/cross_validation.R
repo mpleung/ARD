@@ -28,9 +28,9 @@
 #'         }
 #'         If method = "mse", returns a double representing the cross validation mean squared error for the provided lambda.
 #' @export
-cross_validation_combined <- function(inputs, outputs, Lipschitz, iterations, etol, gamma,
-                                      symmetrized, fixed_effects, CV_folds,
-                                      method = c("grid", "mse"), lambda = NULL, CV_grid = NULL) {
+cross_validation <- function(inputs, outputs, Lipschitz, iterations, etol, gamma,
+                             symmetrized, fixed_effects, CV_folds,
+                             method = c("grid", "mse"), lambda = NULL, CV_grid = NULL) {
     method <- match.arg(method)
     num_cores <- parallel::detectCores() - 1
     K <- nrow(inputs)
@@ -51,7 +51,7 @@ cross_validation_combined <- function(inputs, outputs, Lipschitz, iterations, et
 
     # Helper function to compute the MSE for a given lambda value on a split
     compute_fold_mse <- function(lambda_val, split) {
-        fit <- accel_nuclear_gradient_wrapper(
+        fit <- accel_nuclear_gradient(
             split$train_inputs, split$train_outputs, lambda_val,
             Lipschitz, iterations, etol, gamma,
             symmetrized, fixed_effects
