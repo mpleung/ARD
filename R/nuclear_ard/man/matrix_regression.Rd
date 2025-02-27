@@ -7,10 +7,10 @@
 matrix_regression(
   inputs,
   outputs,
+  lambda = "NW",
   iterations = 5000,
   etol = 1e-04,
   fixed_effects = FALSE,
-  CV = FALSE,
   CV_grid = NULL,
   CV_folds = 5
 )
@@ -22,6 +22,9 @@ It should be of dimension K x N, where N = village size and K = number of ARD ch
 \item{outputs}{A matrix object. This contains the ARD survey data
 in matrix form with size K x M, where N > M = number of households receiving ARD questionairre.}
 
+\item{lambda}{A scalar or 'NW' or 'CV'. This is the lambda value to use for the algorithm.
+'NW' will compute optimal using arguments based on Negahban and WAinwright (2011). 'CV' will compute the optimal lambda using cross-validation. Set by default to "NW".}
+
 \item{iterations}{A scalar (integer) value. It is the number of iterations the user
 specifies should occur. Set by default to 5000.}
 
@@ -30,8 +33,6 @@ when either the maximum number of iterations has been met or the mean absolute e
 is below etol.}
 
 \item{fixed_effects}{A boolean value. This captures whether to implement node-level fixed effects.}
-
-\item{CV}{A boolean value. This captures whether to implement cross-validation.}
 
 \item{CV_grid}{A vector. This is the grid of lambda values to use for cross-validation. Set by default to seq(0.01, 10, by=0.01).}
 
