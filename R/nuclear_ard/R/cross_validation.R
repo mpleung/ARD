@@ -32,7 +32,7 @@ cross_validation <- function(inputs, outputs, Lipschitz, iterations, etol, gamma
                              symmetrized, fixed_effects, CV_folds,
                              method = c("grid", "mse"), lambda = NULL, CV_grid = NULL) {
     method <- match.arg(method)
-    num_cores <- parallel::detectCores() - 1
+    num_cores <- parallelly::availableCores() - 1
     K <- nrow(inputs)
     all_pairs <- combn(K, 2)
     fold_indices <- all_pairs[, sample(ncol(all_pairs), CV_folds)]
